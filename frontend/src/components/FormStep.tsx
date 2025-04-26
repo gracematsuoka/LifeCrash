@@ -63,6 +63,22 @@ const FormStep: React.FC<FormStepProps> = ({
               error={errors.age}
               placeholder="Enter your age"
             />
+
+            <div className="form-group">
+              <label>Gender</label>
+              <select
+                name="gender"
+                value={stepData.gender || ''}
+                onChange={handleChange}
+                className={`form-control ${errors.gender ? 'error' : ''}`}
+              >
+                <option value="">Select gender...</option>
+                <option value="male">Female</option>
+                <option value="female">Male</option>
+                <option value="other">Other</option>
+              </select>
+              {errors.relationshipStatus && <p className="error-message">{errors.relationshipStatus}</p>}
+            </div>
             
             <div className="form-group">
               <label>Relationship Status</label>
