@@ -262,7 +262,6 @@ const FormStep: React.FC<FormStepProps> = ({
                 className={`form-control ${errors.education ? "error" : ""}`}
               >
                 <option value="">Select level...</option>
-                <option value="High School">High School</option>
                 <option value="Some College">Some College</option>
                 <option value="Associate's Degree">Associate's Degree</option>
                 <option value="Bachelor's Degree">Bachelor's Degree</option>

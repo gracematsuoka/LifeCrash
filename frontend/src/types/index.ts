@@ -23,3 +23,10 @@ export interface FormData {
     severity: number;
     type: string;
   }
+
+  export interface Prediction {
+    crisisAge: number;
+    severity: number;
+    type: string;
+    aiAnalysis?: string; // Optional AI analysis field
+  }

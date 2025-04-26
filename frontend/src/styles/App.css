@@ -388,3 +388,72 @@ select.form-control {
   font-size: 0.9em;
   color: #555;
 }
+
+/* Add these styles to your CSS file */
+
+/* AI Analysis Section */
+.ai-analysis {
+  margin-top: 30px;
+  border-top: 1px solid #eaeaea;
+  padding-top: 20px;
+}
+
+.analysis-container {
+  background-color: #f9f8ff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(103, 58, 183, 0.1);
+  margin-top: 10px;
+  position: relative;
+}
+
+.analysis-text {
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-line;
+  margin: 0;
+}
+
+.analysis-disclaimer {
+  font-size: 12px;
+  color: #888;
+  margin-top: 15px;
+  text-align: right;
+  font-style: italic;
+}
+
+.data-label {
+  font-weight: 600;
+  color: #673ab7;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Add an AI icon to the analysis section */
+.data-label:has(+ .analysis-container)::before {
+  content: "🤖";
+  margin-right: 8px;
+}
+
+/* Severity coloring based on level */
+.severity-bar {
+  background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* Animation for AI analysis appearance */
+.ai-analysis {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
