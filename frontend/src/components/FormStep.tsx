@@ -54,134 +54,231 @@ const FormStep: React.FC<FormStepProps> = ({
 
   const majorOptions = [
     // STEM Fields
-    { value: 'computer science', label: 'Computer Science' },
-    { value: 'cs', label: 'CS' },
-    { value: 'comp sci', label: 'Comp Sci' },
-    { value: 'informatics', label: 'Informatics' },
-    { value: 'engineering', label: 'Engineering' },
-    { value: 'engineer', label: 'Engineer' },
-    { value: 'electrical engineering', label: 'Electrical Engineering' },
-    { value: 'ee', label: 'EE' },
-    { value: 'elec eng', label: 'Elec Eng' },
-    { value: 'mechanical engineering', label: 'Mechanical Engineering' },
-    { value: 'mech eng', label: 'Mech Eng' },
-    { value: 'me', label: 'ME' },
-    { value: 'civil engineering', label: 'Civil Engineering' },
-    { value: 'civil eng', label: 'Civil Eng' },
-    { value: 'ce', label: 'CE' },
-    { value: 'chemical engineering', label: 'Chemical Engineering' },
-    { value: 'chem eng', label: 'Chem Eng' },
-    { value: 'che', label: 'CHE' },
-    { value: 'aerospace engineering', label: 'Aerospace Engineering' },
-    { value: 'aero eng', label: 'Aero Eng' },
-    { value: 'aerospace', label: 'Aerospace' },
-    { value: 'biomedical engineering', label: 'Biomedical Engineering' },
-    { value: 'biomed eng', label: 'Biomed Eng' },
-    { value: 'bme', label: 'BME' },
-    { value: 'software engineering', label: 'Software Engineering' },
-    { value: 'software eng', label: 'Software Eng' },
-    { value: 'data science', label: 'Data Science' },
-    { value: 'data analytics', label: 'Data Analytics' },
-    { value: 'mathematics', label: 'Mathematics' },
-    { value: 'math', label: 'Math' },
-    { value: 'applied math', label: 'Applied Math' },
-    { value: 'physics', label: 'Physics' },
-    { value: 'astrophysics', label: 'Astrophysics' },
-    { value: 'quantum physics', label: 'Quantum Physics' },
-    { value: 'chemistry', label: 'Chemistry' },
-    { value: 'biochemistry', label: 'Biochemistry' },
-    { value: 'chemical', label: 'Chemical' },
-    { value: 'statistics', label: 'Statistics' },
-    { value: 'statistical science', label: 'Statistical Science' },
-    { value: 'robotics', label: 'Robotics' },
-    { value: 'artificial intelligence', label: 'Artificial Intelligence' },
-    { value: 'ai', label: 'AI' },
-    { value: 'machine learning', label: 'Machine Learning' },
-    { value: 'ml', label: 'ML' },
+    { value: 'Computer Science', label: 'Computer Science' },
+    { value: 'Engineering', label: 'Engineering' },
+    { value: 'Electrical Engineering', label: 'Electrical Engineering' },
+    { value: 'Mechanical Engineering', label: 'Mechanical Engineering' },
+    { value: 'Civil Engineering', label: 'Civil Engineering' },
+    { value: 'Chemical Engineering', label: 'Chemical Engineering' },
+    { value: 'Aerospace Engineering', label: 'Aerospace Engineering' },
+    { value: 'Biomedical Engineering', label: 'Biomedical Engineering' },
+    { value: 'Software Engineering', label: 'Software Engineering' },
+    { value: 'Data Science', label: 'Data Science' },
+    { value: 'Mathematics', label: 'Mathematics' },
+    { value: 'Physics', label: 'Physics' },
+    { value: 'Chemistry', label: 'Chemistry' },
+    { value: 'Statistics', label: 'Statistics' },
+    { value: 'Robotics', label: 'Robotics' },
+    { value: 'Artificial Intelligence', label: 'Artificial Intelligence' },
+    { value: 'Machine Learning', label: 'Machine Learning' },
   
     // Business Fields
-    { value: 'business', label: 'Business' },
-    { value: 'business administration', label: 'Business Administration' },
-    { value: 'mba', label: 'MBA' },
-    { value: 'finance', label: 'Finance' },
-    { value: 'financial engineering', label: 'Financial Engineering' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'market research', label: 'Market Research' },
-    { value: 'accounting', label: 'Accounting' },
-    { value: 'cpa', label: 'CPA' },
-    { value: 'economics', label: 'Economics' },
-    { value: 'econ', label: 'Econ' },
-    { value: 'applied economics', label: 'Applied Economics' },
-    { value: 'management', label: 'Management' },
-    { value: 'entrepreneurship', label: 'Entrepreneurship' },
+    { value: 'Business', label: 'Business' },
+    { value: 'Finance', label: 'Finance' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'Accounting', label: 'Accounting' },
+    { value: 'Economics', label: 'Economics' },
+    { value: 'Management', label: 'Management' },
+    { value: 'Entrepreneurship', label: 'Entrepreneurship' },
   
     // Humanities
-    { value: 'english', label: 'English' },
-    { value: 'english literature', label: 'English Literature' },
-    { value: 'literature', label: 'Literature' },
-    { value: 'history', label: 'History' },
-    { value: 'world history', label: 'World History' },
-    { value: 'american history', label: 'American History' },
-    { value: 'philosophy', label: 'Philosophy' },
-    { value: 'ethics', label: 'Ethics' },
-    { value: 'logic', label: 'Logic' },
-    { value: 'psychology', label: 'Psychology' },
-    { value: 'psy', label: 'Psy' },
-    { value: 'clinical psychology', label: 'Clinical Psychology' },
-    { value: 'sociology', label: 'Sociology' },
-    { value: 'social science', label: 'Social Science' },
-    { value: 'anthropology', label: 'Anthropology' },
-    { value: 'political science', label: 'Political Science' },
-    { value: 'politics', label: 'Politics' },
-    { value: 'government', label: 'Government' },
-    { value: 'communications', label: 'Communications' },
-    { value: 'media studies', label: 'Media Studies' },
+    { value: 'English', label: 'English' },
+    { value: 'History', label: 'History' },
+    { value: 'Philosophy', label: 'Philosophy' },
+    { value: 'Psychology', label: 'Psychology' },
+    { value: 'Sociology', label: 'Sociology' },
+    { value: 'Political Science', label: 'Political Science' },
+    { value: 'Communications', label: 'Communications' },
   
     // Arts
-    { value: 'art', label: 'Art' },
-    { value: 'fine arts', label: 'Fine Arts' },
-    { value: 'visual arts', label: 'Visual Arts' },
-    { value: 'music', label: 'Music' },
-    { value: 'music theory', label: 'Music Theory' },
-    { value: 'composition', label: 'Composition' },
-    { value: 'theater', label: 'Theater' },
-    { value: 'theatre', label: 'Theatre' },
-    { value: 'drama', label: 'Drama' },
-    { value: 'design', label: 'Design' },
-    { value: 'graphic design', label: 'Graphic Design' },
-    { value: 'industrial design', label: 'Industrial Design' },
-    { value: 'film', label: 'Film' },
-    { value: 'film studies', label: 'Film Studies' },
-    { value: 'cinema', label: 'Cinema' },
+    { value: 'Art', label: 'Art' },
+    { value: 'Music', label: 'Music' },
+    { value: 'Theater', label: 'Theater' },
+    { value: 'Design', label: 'Design' },
+    { value: 'Film', label: 'Film' },
   
     // Healthcare
-    { value: 'medicine', label: 'Medicine' },
-    { value: 'pre-med', label: 'Pre-Med' },
-    { value: 'md', label: 'MD' },
-    { value: 'nursing', label: 'Nursing' },
-    { value: 'rn', label: 'RN' },
-    { value: 'bsn', label: 'BSN' },
-    { value: 'pharmacology', label: 'Pharmacology' },
-    { value: 'pharmacy', label: 'Pharmacy' },
-    { value: 'pharmd', label: 'PharmD' },
-    { value: 'biology', label: 'Biology' },
-    { value: 'biological science', label: 'Biological Science' },
-    { value: 'microbiology', label: 'Microbiology' },
-    { value: 'public health', label: 'Public Health' },
-    { value: 'health sciences', label: 'Health Sciences' },
-    { value: 'veterinary', label: 'Veterinary' },
-    { value: 'vet', label: 'Vet' },
-    { value: 'dvm', label: 'DVM' },
-    { value: 'dentistry', label: 'Dentistry' },
-    { value: 'dental', label: 'Dental' },
-    { value: 'dds', label: 'DDS' },
+    { value: 'Medicine', label: 'Medicine' },
+    { value: 'Nursing', label: 'Nursing' },
+    { value: 'Pharmacy', label: 'Pharmacy' },
+    { value: 'Biology', label: 'Biology' },
+    { value: 'Public Health', label: 'Public Health' },
+    { value: 'Veterinary', label: 'Veterinary' },
+    { value: 'Dentistry', label: 'Dentistry' },
   ];  
 
+  const majorAliasMap: Record<string, string> = {
+    // STEM Fields
+    'computer science': 'Computer Science',
+    'cs': 'Computer Science',
+    'comp sci': 'Computer Science',
+    'informatics': 'Computer Science',
+    
+    'engineering': 'Engineering',
+    'engineer': 'Engineering',
+    
+    'electrical engineering': 'Electrical Engineering',
+    'ee': 'Electrical Engineering',
+    'elec eng': 'Electrical Engineering',
+  
+    'mechanical engineering': 'Mechanical Engineering',
+    'mech eng': 'Mechanical Engineering',
+    'me': 'Mechanical Engineering',
+  
+    'civil engineering': 'Civil Engineering',
+    'civil eng': 'Civil Engineering',
+    'ce': 'Civil Engineering',
+  
+    'chemical engineering': 'Chemical Engineering',
+    'chem eng': 'Chemical Engineering',
+    'che': 'Chemical Engineering',
+  
+    'aerospace engineering': 'Aerospace Engineering',
+    'aero eng': 'Aerospace Engineering',
+    'aerospace': 'Aerospace Engineering',
+  
+    'biomedical engineering': 'Biomedical Engineering',
+    'biomed eng': 'Biomedical Engineering',
+    'bme': 'Biomedical Engineering',
+  
+    'software engineering': 'Software Engineering',
+    'software eng': 'Software Engineering',
+  
+    'data science': 'Data Science',
+    'data analytics': 'Data Science',
+  
+    'mathematics': 'Mathematics',
+    'math': 'Mathematics',
+    'applied math': 'Mathematics',
+  
+    'physics': 'Physics',
+    'astrophysics': 'Physics',
+    'quantum physics': 'Physics',
+  
+    'chemistry': 'Chemistry',
+    'biochemistry': 'Chemistry',
+    'chemical': 'Chemistry',
+  
+    'statistics': 'Statistics',
+    'statistical science': 'Statistics',
+  
+    'robotics': 'Robotics',
+  
+    'artificial intelligence': 'Artificial Intelligence',
+    'ai': 'Artificial Intelligence',
+  
+    'machine learning': 'Machine Learning',
+    'ml': 'Machine Learning',
+  
+    // Business Fields
+    'business': 'Business',
+    'business administration': 'Business',
+    'mba': 'Business',
+  
+    'finance': 'Finance',
+    'financial engineering': 'Finance',
+  
+    'marketing': 'Marketing',
+    'market research': 'Marketing',
+  
+    'accounting': 'Accounting',
+    'cpa': 'Accounting',
+  
+    'economics': 'Economics',
+    'econ': 'Economics',
+    'applied economics': 'Economics',
+  
+    'management': 'Management',
+    'entrepreneurship': 'Entrepreneurship',
+  
+    // Humanities
+    'english': 'English',
+    'english literature': 'English',
+    'literature': 'English',
+  
+    'history': 'History',
+    'world history': 'History',
+    'american history': 'History',
+  
+    'philosophy': 'Philosophy',
+    'ethics': 'Philosophy',
+    'logic': 'Philosophy',
+  
+    'psychology': 'Psychology',
+    'psy': 'Psychology',
+    'clinical psychology': 'Psychology',
+  
+    'sociology': 'Sociology',
+    'social science': 'Sociology',
+    'anthropology': 'Sociology',
+  
+    'political science': 'Political Science',
+    'politics': 'Political Science',
+    'government': 'Political Science',
+  
+    'communications': 'Communications',
+    'media studies': 'Communications',
+  
+    // Arts
+    'art': 'Art',
+    'fine arts': 'Art',
+    'visual arts': 'Art',
+  
+    'music': 'Music',
+    'music theory': 'Music',
+    'composition': 'Music',
+  
+    'theater': 'Theater',
+    'theatre': 'Theater',
+    'drama': 'Theater',
+  
+    'design': 'Design',
+    'graphic design': 'Design',
+    'industrial design': 'Design',
+  
+    'film': 'Film',
+    'film studies': 'Film',
+    'cinema': 'Film',
+  
+    // Healthcare
+    'medicine': 'Medicine',
+    'pre-med': 'Medicine',
+    'md': 'Medicine',
+  
+    'nursing': 'Nursing',
+    'rn': 'Nursing',
+    'bsn': 'Nursing',
+  
+    'pharmacology': 'Pharmacy',
+    'pharmacy': 'Pharmacy',
+    'pharmd': 'Pharmacy',
+  
+    'biology': 'Biology',
+    'biological science': 'Biology',
+    'microbiology': 'Biology',
+  
+    'public health': 'Public Health',
+    'health sciences': 'Public Health',
+  
+    'veterinary': 'Veterinary',
+    'vet': 'Veterinary',
+    'dvm': 'Veterinary',
+  
+    'dentistry': 'Dentistry',
+    'dental': 'Dentistry',
+    'dds': 'Dentistry',
+  };
+  
+
   const handleMajorChange = (selectedOption: any) => {
-    setStepData({
-      ...stepData,
-      major: selectedOption.value,
-    });
+    const input = selectedOption?.value?.toLowerCase() || '';
+  
+    const mappedMajor = majorAliasMap[input] || input; // default fallback if no mapping
+  
+    setStepData((prevData) => ({
+      ...prevData,
+      major: mappedMajor,
+    }));
   };
 
   const renderFormFields = () => {
@@ -342,15 +439,45 @@ const FormStep: React.FC<FormStepProps> = ({
                   <Select
                     name="major"
                     options={majorOptions}
-                    value={majorOptions.find(option => option.value === stepData.major)}
-                    onChange={handleMajorChange}
+                    value={
+                      majorOptions.find(option => 
+                        option.label === majorAliasMap[(stepData.major || '').toLowerCase()]
+                      ) || null
+                    }
+                    onChange={(selectedOption: any) => {
+                      const input = selectedOption?.value?.toLowerCase() || '';
+                      const mappedMajor = majorAliasMap[input] || input;
+                      setStepData((prevData) => ({
+                        ...prevData,
+                        major: mappedMajor,
+                      }));
+                    }}
                     placeholder="Select your major"
                     classNamePrefix="react-select"
+                    isClearable
+                    isSearchable
+                    filterOption={(option, inputValue) => {
+                      const searchInput = inputValue.toLowerCase();
+                      const candidate = option.label.toLowerCase();
+
+                      if (candidate.includes(searchInput)) {
+                        return true;
+                      }
+
+                      const mappedInput = majorAliasMap[searchInput];
+                      if (mappedInput && mappedInput === option.label) {
+                        return true;
+                      }
+
+                      return false; 
+                    }}
                   />
+
                   {errors.major && (
                     <p className="error-message">{errors.major}</p>
                   )}
                 </div>
+
 
                 <div className="form-group">
                   <label>University GPA</label>
@@ -397,16 +524,6 @@ const FormStep: React.FC<FormStepProps> = ({
       case 3:
         return (
           <div className="form-fields">
-            <FormField
-              label="Career Type"
-              name="careerType"
-              type="text"
-              value={stepData.careerType || ""}
-              onChange={handleChange}
-              error={errors.careerType}
-              placeholder="e.g., Finance, Technology, Healthcare"
-            />
-
             <div className="form-group">
               <label>Job Satisfaction</label>
               <p className="satisfaction-description">

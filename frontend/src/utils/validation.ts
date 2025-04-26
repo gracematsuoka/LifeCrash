@@ -7,7 +7,6 @@ export const initialFormData: FormData = {
   children: '',
   education: '',
   jobSatisfaction: '',
-  careerType: '',
   income: '',
   health: '',
   hobbies: '',

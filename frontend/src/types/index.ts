@@ -11,7 +11,6 @@ export interface FormData {
     universityGPA: string; 
     gender: string;         
     jobSatisfaction: string;
-    careerType: string;
     income: string;
     jobLevel: string;
     health: string;
