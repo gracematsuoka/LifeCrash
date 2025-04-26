@@ -28,22 +28,7 @@ const App = () => {
 
   const handlePredict = async () => {
     setIsLoading(true);
-<<<<<<< HEAD
-    try {
-      const dataToSend = {
-        Age: parseInt(formData.age),
-        Gender: formData.gender,
-        High_School_GPA: parseFloat(formData.highSchoolGPA),
-        SAT_Score: parseInt(formData.satScore),
-        University_GPA: formData.universityGPA,
-        Field_of_Study: formData.major,
-        Internships_Completed: parseInt(formData.internshipsCompleted),
-        Career_Satisfaction: parseInt(formData.jobSatisfaction),
-        Current_Job_Level: formData.jobLevel,
-      };
-=======
     console.log("Sending data to API:", formData); // Log outgoing data
->>>>>>> c7a9be5 (fixing api call)
   
     try {
       const response = await fetch('http://localhost:5001/api/predict', {
