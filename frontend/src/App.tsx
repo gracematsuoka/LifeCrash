@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { FormData, Prediction } from './types';
-import { initialFormData, validateForm } from './utils/validation';
 import FormStep from './components/FormStep';
 import Results from './components/Results';
+import { initialFormData, validateForm } from './utils/validation';
+import { FormData, Prediction } from './types'; 
 import './styles/App.css';
 
-const App = () => {
+
+const App: React.FC = () => {
   const [step, setStep] = useState(0); // 0 = Home, 1-5 = Forms, 6 = Results
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -28,8 +29,8 @@ const App = () => {
 
   const handlePredict = async () => {
     setIsLoading(true);
-    console.log("Sending data to API:", formData); // Log outgoing data
-  
+    console.log("Sending data to API:", formData);
+    
     try {
       const response = await fetch('http://localhost:5001/api/predict', {
         method: 'POST',
@@ -38,34 +39,33 @@ const App = () => {
         },
         body: JSON.stringify(formData),
       });
-  
-      console.log(`API Response status: ${response.status}`); // Log HTTP status
-  
+      
+      console.log(`API Response status: ${response.status}`); 
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`API Error: ${errorText}`);
         throw new Error(`HTTP error ${response.status}`);
       }
-  
+      
       const result = await response.json();
       console.log("Received prediction result:", result); // Log response data
-  
+      
       setPrediction({
         crisisAge: result.crisisAge,
         severity: result.severity,
         type: result.type,
         aiAnalysis: result.aiAnalysis
       });
-  
     } catch (error) {
       console.error('Error getting prediction from API:', error);
+      // You might want to set an error state here to display to the user
     } finally {
       setIsLoading(false);
-      setStep(6);
+      setStep(6); // Consider only moving to step 6 if there was no error
     }
   };
   
-
   const renderHome = () => (
     <div className="home-screen">
       <div className="home-content">
@@ -103,7 +103,7 @@ const App = () => {
             />
           )}
         </div>
-
+        
         {isLoading && (
           <div className="loading-overlay">
             <div className="loading-card">

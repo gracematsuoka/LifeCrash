@@ -15,6 +15,10 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Load your trained model
 with open('../frontend/random_forest_model.pkl', 'rb') as f:
     model = pickle.load(f)
+    
+# Print feature names if available for debugging
+if hasattr(model, 'feature_names_in_'):
+    print("Model expects these features:", model.feature_names_in_)
 
 app = Flask(__name__)
 CORS(app)
@@ -35,19 +39,18 @@ def predict_api():
             except (ValueError, TypeError):
                 return default
 
-        # Map React form fields to DataFrame columns
+        # Based on the notebook images, the model was trained with these exact features
+        # Image 3 shows Feature Importance with: University_GPA, Soft_Skills_Score, Networking_Score, 
+        # Career_Satisfaction, Work_Life_Balance
         user_data = pd.DataFrame([{
-            'Age': safe_float(data.get('age')),
-            'Gender': map_gender_to_value(data.get('gender', '')),
-            'High_School_GPA': safe_float(data.get('highSchoolGPA')),
             'University_GPA': safe_float(data.get('universityGPA')),
-            'Field_of_Study': map_major_to_field(data.get('major', '')),
-            'Internships_Completed': safe_float(data.get('internshipsCompleted')),
+            'Soft_Skills_Score': calculate_soft_skills(data),
+            'Networking_Score': calculate_networking(data),
             'Career_Satisfaction': safe_float(data.get('jobSatisfaction')),
-            'Current_Job_Level': map_job_level(data.get('jobLevel', ''))
+            'Work_Life_Balance': calculate_work_life_balance(data)
         }])
 
-        print(f"Mapped user data: {user_data}")
+        print(f"Mapped user data for model: {user_data}")
 
         # Make prediction
         prediction = model.predict(user_data)[0]
@@ -81,7 +84,57 @@ def predict_api():
 
     except Exception as e:
         print(f"Error in prediction API: {e}")
-        return jsonify({'error': str(e)}), 400
+        error_message = str(e)
+        
+        # Provide more helpful error message for common issues
+        if "Feature names" in error_message and "fit time" in error_message:
+            # Extract expected feature names from error
+            import re
+            seen_features = []
+            if "Feature names seen at fit time" in error_message:
+                seen_match = re.search(r"Feature names seen at fit time.*?:(.*?)(?:Feature names|$)", 
+                                    error_message, re.DOTALL)
+                if seen_match:
+                    seen_text = seen_match.group(1)
+                    seen_features = [f.strip() for f in re.findall(r'- ([^\n]+)', seen_text) if f.strip()]
+            
+            error_message = f"Model feature mismatch. Model expects these features: {', '.join(seen_features)}"
+        
+        return jsonify({'error': error_message}), 400
+
+# Helper functions for calculating missing features - based on your notebook
+def calculate_soft_skills(data):
+    # Example calculation for soft skills based on job level and education
+    education_level = map_education_to_level(data.get('education', 'Bachelor'))
+    job_level = map_job_level_to_score(data.get('jobLevel', 'Mid'))
+    
+    # Simple formula: combine education and job level
+    score = (education_level * 0.6) + (job_level * 0.4)
+    return max(min(score, 5), 1)  # Keep between 1-5
+
+def calculate_networking(data):
+    # Example calculation for networking score
+    job_level = map_job_level_to_score(data.get('jobLevel', 'Mid'))
+    hobbies = data.get('hobbies', '')
+    
+    # Social hobbies indicate better networking
+    hobby_score = 4 if 'Social' in hobbies else 3
+    
+    # Higher job levels typically correlate with better networking
+    score = (job_level * 0.7) + (hobby_score * 0.3)
+    return max(min(score, 5), 1)  # Keep between 1-5
+
+def calculate_work_life_balance(data):
+    # Example calculation for work-life balance
+    job_satisfaction = safe_float(data.get('jobSatisfaction', 3), 3)
+    hobbies = data.get('hobbies', '')
+    
+    # Having any hobbies indicates better work-life balance
+    hobby_factor = 4 if hobbies else 2
+    
+    # Simple formula
+    score = (job_satisfaction * 0.5) + (hobby_factor * 0.5)
+    return max(min(score, 5), 1)  # Keep between 1-5
 
 # OpenAI integration for enhanced analysis
 def get_ai_analysis(form_data, prediction, severity, crisis_type):
@@ -110,7 +163,7 @@ def get_ai_analysis(form_data, prediction, severity, crisis_type):
         - Crisis Risk Score: {prediction}/10
         - Severity: {severity}/10
         - Predicted Crisis Type: {crisis_type}
-        - Expected Age of Crisis: {calculate_crisis_age(float(age), prediction)}
+        - Expected Age of Crisis: {calculate_crisis_age(float(age) if age != 'unknown' else 30, prediction)}
 
         Based on this information, provide a 2-3 paragraph personalized analysis including:
         1. Key factors contributing to their risk level
@@ -138,76 +191,93 @@ def get_ai_analysis(form_data, prediction, severity, crisis_type):
         print(f"Error getting AI analysis: {e}")
         return "Unable to generate AI analysis at this time."
 
-# Helper functions
-def map_gender_to_value(gender):
-    if gender.lower() == 'male':
-        return 0
-    elif gender.lower() == 'female':
-        return 1
-    else:
-        return 2  # Other
+# Additional helper functions
+def safe_float(value, default=0.0):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
 
-def map_major_to_field(major):
-    if not major:
-        return 0
-    major_lower = major.strip().lower()
-    major_map = {
-        'computer science': 1, 'cs': 1, 'comp sci': 1, 'informatics': 1,
-        'engineering': 1, 'engineer': 1, 'electrical engineering': 1, 'mechanical engineering': 1,
-        'business': 2, 'finance': 2, 'economics': 2,
-        'english': 3, 'history': 3, 'psychology': 3, 'sociology': 3,
-        'art': 4, 'music': 4, 'theater': 4, 'design': 4,
-        'medicine': 5, 'nursing': 5, 'biology': 5
+def map_education_to_level(education):
+    education_map = {
+        'High School': 1,
+        'Associate': 2,
+        'Bachelor': 3,
+        'Bachelor\'s Degree': 3,
+        'Master': 4,
+        'Master\'s Degree': 4,
+        'Doctorate': 5,
+        'PhD': 5
     }
-    for key, value in major_map.items():
-        if key in major_lower:
-            return value
-    return 0
+    return education_map.get(education, 3)  # Default to Bachelor level
 
-def map_job_level(job_level):
+def map_job_level_to_score(job_level):
     level_map = {
         'Entry': 1,
-        'Mid': 2,
-        'Senior': 3,
-        'Executive': 4
+        'Mid': 3,
+        'Senior': 4,
+        'Executive': 5
     }
-    return level_map.get(job_level, 1)
+    return level_map.get(job_level, 3)  # Default to Mid level
+
+def map_health_to_score(health):
+    health_map = {
+        'Poor': 1,
+        'Below Average': 2,
+        'Average': 3,
+        'Active': 4,
+        'Fitness Enthusiast': 5,
+        'Above Average': 4,
+        'Excellent': 5
+    }
+    return health_map.get(health, 3)  # Default to Average
 
 def calculate_crisis_age(current_age, prediction):
-    if prediction < 5:
+    # Based on your notebook code, prediction is Crisis_Intensity
+    # Lower number means more severe crisis
+    if prediction < 2:
+        years_until_crisis = 3
+    elif prediction < 3:
         years_until_crisis = 5
-    elif prediction < 7:
-        years_until_crisis = 10
+    elif prediction < 4:
+        years_until_crisis = 8
     else:
-        years_until_crisis = 15
+        years_until_crisis = 12
+        
     crisis_age = current_age + years_until_crisis
-    return min(max(crisis_age, 35), 70)
+    return min(max(int(crisis_age), 35), 70)  # Keep between 35-70 and whole number
 
 def calculate_severity(prediction):
-    severity = 10 - prediction
-    return min(max(round(severity, 1), 1), 10)
+    # Based on images, lower prediction means higher crisis intensity
+    # So we invert it for the severity display (10 = max severity)
+    max_prediction = 5  # Based on the scale seen in the plots
+    severity = max_prediction - prediction
+    normalized_severity = (severity / max_prediction) * 10
+    return min(max(round(normalized_severity, 1), 1), 10)  # Keep between 1-10
 
 def determine_crisis_type(prediction, user_data, form_data):
-    job_satisfaction = float(form_data.get('jobSatisfaction', 5))
-    income = form_data.get('income', 'Average')
-    hobbies = form_data.get('hobbies', 'None')
-
-    if prediction < 4:
+    job_satisfaction = safe_float(form_data.get('jobSatisfaction', 5))
+    income = form_data.get('income', '')
+    income_value = safe_float(income, 50000)
+    hobbies = form_data.get('hobbies', '')
+    
+    # Based on your notebook's assign_crisis_type function
+    if prediction < 2:  # High intensity crisis
         if job_satisfaction <= 2:
             return "Career change to follow passion"
-        elif income in ['High', 'Very High']:
+        elif income_value > 100000:
             return "Buys impractical sports car"
         else:
             return "Goes back to school"
-    elif prediction < 7:
-        if hobbies == 'Creative':
+    elif prediction < 3.5:  # Medium intensity
+        if "Creative" in hobbies:
             return "Joins a rock band"
-        elif income in ['High', 'Very High']:
+        elif income_value > 80000:
             return "Takes a sabbatical year"
         else:
             return "Radical image change"
-    else:
-        if hobbies == 'Physical':
+    else:  # Low intensity
+        if "Physical" in hobbies or "Fitness" in form_data.get('health', ''):
             return "Extreme hobby adoption"
         else:
             return "Sudden travel obsession"
