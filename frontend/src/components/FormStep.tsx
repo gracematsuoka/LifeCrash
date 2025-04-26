@@ -63,6 +63,22 @@ const FormStep: React.FC<FormStepProps> = ({
               error={errors.age}
               placeholder="Enter your age"
             />
+
+            <div className="form-group">
+              <label>Gender</label>
+              <select
+                name="gender"
+                value={stepData.gender || ''}
+                onChange={handleChange}
+                className={`form-control ${errors.gender ? 'error' : ''}`}
+              >
+                <option value="">Select gender...</option>
+                <option value="male">Female</option>
+                <option value="female">Male</option>
+                <option value="other">Other</option>
+              </select>
+              {errors.relationshipStatus && <p className="error-message">{errors.relationshipStatus}</p>}
+            </div>
             
             <div className="form-group">
               <label>Relationship Status</label>
@@ -196,6 +212,19 @@ const FormStep: React.FC<FormStepProps> = ({
                   />
                   {errors.universityGPA && <p className="error-message">{errors.universityGPA}</p>}
                 </div>
+
+                <div className="form-group">
+                  <label>Internships Completed</label>
+                  <input
+                    type="number"
+                    name="internshipsCompleted"
+                    value={stepData.internshipsCompleted || ''}
+                    onChange={handleChange}
+                    placeholder="e.g., 3"
+                    className={`form-control ${errors.internshipsCompleted ? 'error' : ''}`}
+                  />
+                  {errors.internshipsCompleted && <p className="error-message">{errors.internshipsCompleted}</p>}
+                </div>
               </>
             )}
           </div>
@@ -236,7 +265,7 @@ const FormStep: React.FC<FormStepProps> = ({
               </div>
               {errors.jobSatisfaction && <p className="error-message">{errors.jobSatisfaction}</p>}
             </div>
-            
+
             <div className="form-group">
               <label>Income Level</label>
               <select
@@ -252,6 +281,23 @@ const FormStep: React.FC<FormStepProps> = ({
                 <option value="Very High">Significantly Above Average</option>
               </select>
               {errors.income && <p className="error-message">{errors.income}</p>}
+            </div>
+
+            <div className="form-group">
+              <label>Job Level</label>
+              <select
+                name="jobLevel"
+                value={stepData.jobLevel || ''}
+                onChange={handleChange}
+                className={`form-control ${errors.jobLevel ? 'error' : ''}`}
+              >
+                <option value="">Select job level...</option>
+                <option value="Entry">Entry</option>
+                <option value="Mid">Mid</option>
+                <option value="Senior">Senior</option>
+                <option value="Executive">Executive</option>
+              </select>
+              {errors.jobLevel && <p className="error-message">{errors.jobLevel}</p>}
             </div>
           </div>
         );

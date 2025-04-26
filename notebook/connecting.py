@@ -12,19 +12,25 @@ app = Flask(__name__)
 def predict():
     if request.method == 'POST':
         # Get user input from form
-        gpa = float(request.form['University_GPA'])
-        soft_skills = float(request.form['Soft_Skills_Score'])
-        networking = float(request.form['Networking_Score'])
+        age = float(request.form['Age'])
+        gender = float(request.form['Gender'])
+        hsgpa = float(request.form['High_School_GPA'])
+        unigpa = float(request.form['University_GPA'])
+        major = float(request.form['Field_of_Study'])
+        internships = float(request.form['Internships_Completed'])
         career_satisfaction = float(request.form['Career_Satisfaction'])
-        work_life_balance = float(request.form['Work_Life_Balance'])
+        currentjoblvl = float(request.form['Current_Job_Level'])
 
-        # Put into a DataFrame (columns must match training)
+        # Put into a DataFrame (columns must match training data columns)
         user_data = pd.DataFrame([{
-            'University_GPA': gpa,
-            'Soft_Skills_Score': soft_skills,
-            'Networking_Score': networking,
+            'Age': age,
+            'Gender': gender,
+            'High_School_GPA': hsgpa,
+            'University_GPA': unigpa,
+            'Field_of_Study': major,
+            'Internships_Completed': internships,
             'Career_Satisfaction': career_satisfaction,
-            'Work_Life_Balance': work_life_balance
+            'Current_Job_Level': currentjoblvl
         }])
 
         # Predict
@@ -36,5 +42,3 @@ def predict():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-

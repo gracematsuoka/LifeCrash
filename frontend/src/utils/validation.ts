@@ -2,6 +2,7 @@ import { FormData } from '../types';
 
 export const initialFormData: FormData = {
   age: '',
+  gender: '',
   relationshipStatus: '',
   children: '',
   education: '',
@@ -15,6 +16,8 @@ export const initialFormData: FormData = {
   universityName: '',
   major: '',
   universityGPA: '',
+  internshipsCompleted: '',
+  jobLevel: '',
 };
 
 export const getFieldsForStep = (currentStep: number): string[] => {
