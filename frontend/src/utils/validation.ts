@@ -15,6 +15,8 @@ export const initialFormData: FormData = {
   universityName: '',
   major: '',
   universityGPA: '',
+  internshipsCompleted: '',
+  jobLevel: '',
 };
 
 export const getFieldsForStep = (currentStep: number): string[] => {

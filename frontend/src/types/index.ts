@@ -8,9 +8,11 @@ export interface FormData {
     universityName: string; // Added for University name
     major: string;          // Added for Major
     universityGPA: string;  // Added for University GPA
+    internshipsCompleted: string;
     jobSatisfaction: string;
     careerType: string;
     income: string;
+    jobLevel: string;
     health: string;
     hobbies: string;
   }
