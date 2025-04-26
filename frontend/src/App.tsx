@@ -30,6 +30,7 @@ const App = () => {
     setIsLoading(true);
     try {
       const dataToSend = {
+        Age: parseInt(formData.age),
         High_School_GPA: parseFloat(formData.highSchoolGPA),
         SAT_Score: parseInt(formData.satScore),
         University_GPA: formData.universityGPA,
