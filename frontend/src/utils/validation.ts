@@ -2,6 +2,7 @@ import { FormData } from '../types';
 
 export const initialFormData: FormData = {
   age: '',
+  gender: '',
   relationshipStatus: '',
   children: '',
   education: '',
