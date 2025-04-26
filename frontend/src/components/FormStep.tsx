@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { FormData } from '../types';
-import { getFieldsForStep } from '../utils/validation'; 
-import FormField from './FormField';
+import React, { useState } from "react";
+import { FormData } from "../types";
+import { getFieldsForStep } from "../utils/validation";
+import FormField from "./FormField";
 
 interface FormStepProps {
   step: number;
@@ -12,30 +12,32 @@ interface FormStepProps {
   handlePredict: () => void;
 }
 
-const FormStep: React.FC<FormStepProps> = ({ 
-  step, 
-  formData, 
-  errors, 
-  handleNext, 
-  handleBack, 
-  handlePredict 
+const FormStep: React.FC<FormStepProps> = ({
+  step,
+  formData,
+  errors,
+  handleNext,
+  handleBack,
+  handlePredict,
 }) => {
   const [stepData, setStepData] = useState<Partial<FormData>>(() => {
     // Initialize with current values from formData based on step
     const fields = getFieldsForStep(step);
     const initialData: Partial<FormData> = {};
-    
-    fields.forEach(field => {
+
+    fields.forEach((field) => {
       initialData[field as keyof FormData] = formData[field as keyof FormData];
     });
-    
+
     return initialData;
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setStepData({
       ...stepData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -58,7 +60,7 @@ const FormStep: React.FC<FormStepProps> = ({
               label="Age"
               name="age"
               type="number"
-              value={stepData.age || ''}
+              value={stepData.age || ""}
               onChange={handleChange}
               error={errors.age}
               placeholder="Enter your age"
@@ -68,25 +70,29 @@ const FormStep: React.FC<FormStepProps> = ({
               <label>Gender</label>
               <select
                 name="gender"
-                value={stepData.gender || ''}
+                value={stepData.gender || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.gender ? 'error' : ''}`}
+                className={`form-control ${errors.gender ? "error" : ""}`}
               >
                 <option value="">Select gender...</option>
                 <option value="male">Female</option>
                 <option value="female">Male</option>
                 <option value="other">Other</option>
               </select>
-              {errors.relationshipStatus && <p className="error-message">{errors.relationshipStatus}</p>}
+              {errors.relationshipStatus && (
+                <p className="error-message">{errors.relationshipStatus}</p>
+              )}
             </div>
-            
+
             <div className="form-group">
               <label>Relationship Status</label>
               <select
                 name="relationshipStatus"
-                value={stepData.relationshipStatus || ''}
+                value={stepData.relationshipStatus || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.relationshipStatus ? 'error' : ''}`}
+                className={`form-control ${
+                  errors.relationshipStatus ? "error" : ""
+                }`}
               >
                 <option value="">Select status...</option>
                 <option value="Single">Single</option>
@@ -95,14 +101,16 @@ const FormStep: React.FC<FormStepProps> = ({
                 <option value="Divorced">Divorced</option>
                 <option value="Widowed">Widowed</option>
               </select>
-              {errors.relationshipStatus && <p className="error-message">{errors.relationshipStatus}</p>}
+              {errors.relationshipStatus && (
+                <p className="error-message">{errors.relationshipStatus}</p>
+              )}
             </div>
-            
+
             <FormField
               label="Number of Children"
               name="children"
               type="number"
-              value={stepData.children || ''}
+              value={stepData.children || ""}
               onChange={handleChange}
               error={errors.children}
               placeholder="How many children do you have?"
@@ -116,9 +124,9 @@ const FormStep: React.FC<FormStepProps> = ({
               <label>Education Level</label>
               <select
                 name="education"
-                value={stepData.education || ''}
+                value={stepData.education || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.education ? 'error' : ''}`}
+                className={`form-control ${errors.education ? "error" : ""}`}
               >
                 <option value="">Select level...</option>
                 <option value="High School">High School</option>
@@ -128,9 +136,11 @@ const FormStep: React.FC<FormStepProps> = ({
                 <option value="Master's Degree">Master's Degree</option>
                 <option value="Doctorate">Doctorate</option>
               </select>
-              {errors.education && <p className="error-message">{errors.education}</p>}
+              {errors.education && (
+                <p className="error-message">{errors.education}</p>
+              )}
             </div>
-        
+
             {/* High School GPA - Only show if education is High School or higher */}
             {stepData.education && (
               <div className="form-group">
@@ -138,18 +148,22 @@ const FormStep: React.FC<FormStepProps> = ({
                 <input
                   type="number"
                   name="highSchoolGPA"
-                  value={stepData.highSchoolGPA || ''}
+                  value={stepData.highSchoolGPA || ""}
                   onChange={handleChange}
                   placeholder="e.g., 3.5"
                   min="0"
                   max="4.0"
                   step="0.01"
-                  className={`form-control ${errors.highSchoolGPA ? 'error' : ''}`}
+                  className={`form-control ${
+                    errors.highSchoolGPA ? "error" : ""
+                  }`}
                 />
-                {errors.highSchoolGPA && <p className="error-message">{errors.highSchoolGPA}</p>}
+                {errors.highSchoolGPA && (
+                  <p className="error-message">{errors.highSchoolGPA}</p>
+                )}
               </div>
             )}
-        
+
             {/* SAT Score - Only show if education is High School or higher */}
             {stepData.education && (
               <div className="form-group">
@@ -157,60 +171,72 @@ const FormStep: React.FC<FormStepProps> = ({
                 <input
                   type="number"
                   name="satScore"
-                  value={stepData.satScore || ''}
+                  value={stepData.satScore || ""}
                   onChange={handleChange}
                   placeholder="e.g., 1200"
                   min="400"
                   max="1600"
-                  className={`form-control ${errors.satScore ? 'error' : ''}`}
+                  className={`form-control ${errors.satScore ? "error" : ""}`}
                 />
-                {errors.satScore && <p className="error-message">{errors.satScore}</p>}
+                {errors.satScore && (
+                  <p className="error-message">{errors.satScore}</p>
+                )}
               </div>
             )}
-        
+
             {/* University Information - Only show if education is Some College or higher */}
-            {stepData.education && stepData.education !== 'High School' && (
+            {stepData.education && stepData.education !== "High School" && (
               <>
                 <div className="form-group">
                   <label>University Name</label>
                   <input
                     type="text"
                     name="universityName"
-                    value={stepData.universityName || ''}
+                    value={stepData.universityName || ""}
                     onChange={handleChange}
                     placeholder="Enter university name"
-                    className={`form-control ${errors.universityName ? 'error' : ''}`}
+                    className={`form-control ${
+                      errors.universityName ? "error" : ""
+                    }`}
                   />
-                  {errors.universityName && <p className="error-message">{errors.universityName}</p>}
+                  {errors.universityName && (
+                    <p className="error-message">{errors.universityName}</p>
+                  )}
                 </div>
-                
+
                 <div className="form-group">
                   <label>Major</label>
                   <input
                     type="text"
                     name="major"
-                    value={stepData.major || ''}
+                    value={stepData.major || ""}
                     onChange={handleChange}
                     placeholder="Enter your major"
-                    className={`form-control ${errors.major ? 'error' : ''}`}
+                    className={`form-control ${errors.major ? "error" : ""}`}
                   />
-                  {errors.major && <p className="error-message">{errors.major}</p>}
+                  {errors.major && (
+                    <p className="error-message">{errors.major}</p>
+                  )}
                 </div>
-                
+
                 <div className="form-group">
                   <label>University GPA</label>
                   <input
                     type="number"
                     name="universityGPA"
-                    value={stepData.universityGPA || ''}
+                    value={stepData.universityGPA || ""}
                     onChange={handleChange}
                     placeholder="e.g., 3.5"
                     min="0"
                     max="4.0"
                     step="0.01"
-                    className={`form-control ${errors.universityGPA ? 'error' : ''}`}
+                    className={`form-control ${
+                      errors.universityGPA ? "error" : ""
+                    }`}
                   />
-                  {errors.universityGPA && <p className="error-message">{errors.universityGPA}</p>}
+                  {errors.universityGPA && (
+                    <p className="error-message">{errors.universityGPA}</p>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -218,12 +244,18 @@ const FormStep: React.FC<FormStepProps> = ({
                   <input
                     type="number"
                     name="internshipsCompleted"
-                    value={stepData.internshipsCompleted || ''}
+                    value={stepData.internshipsCompleted || ""}
                     onChange={handleChange}
                     placeholder="e.g., 3"
-                    className={`form-control ${errors.internshipsCompleted ? 'error' : ''}`}
+                    className={`form-control ${
+                      errors.internshipsCompleted ? "error" : ""
+                    }`}
                   />
-                  {errors.internshipsCompleted && <p className="error-message">{errors.internshipsCompleted}</p>}
+                  {errors.internshipsCompleted && (
+                    <p className="error-message">
+                      {errors.internshipsCompleted}
+                    </p>
+                  )}
                 </div>
               </>
             )}
@@ -236,16 +268,22 @@ const FormStep: React.FC<FormStepProps> = ({
               label="Career Type"
               name="careerType"
               type="text"
-              value={stepData.careerType || ''}
+              value={stepData.careerType || ""}
               onChange={handleChange}
               error={errors.careerType}
               placeholder="e.g., Finance, Technology, Healthcare"
             />
-            
+
             <div className="form-group">
-              <label>Job Satisfaction (1-5)</label>
+              <label>Job Satisfaction</label>
+              <p className="satisfaction-description">
+                How satisfied are you with your job? (1 - 5)
+              </p>
               <div className="radio-group">
-                {[1, 2, 3, 4, 5].map(num => (
+                <span className="radio-extreme">
+                  <small>Very Unsatisfied</small>
+                </span>
+                {[1, 2, 3, 4, 5].map((num) => (
                   <label key={num} className="radio-label">
                     <input
                       type="radio"
@@ -258,38 +296,32 @@ const FormStep: React.FC<FormStepProps> = ({
                     <span className="radio-text">{num}</span>
                   </label>
                 ))}
+                <span className="radio-extreme">
+                  <small>Very Satisfied</small>
+                </span>
               </div>
-              <div className="radio-labels">
-                <span>Very Unsatisfied</span>
-                <span>Very Satisfied</span>
-              </div>
-              {errors.jobSatisfaction && <p className="error-message">{errors.jobSatisfaction}</p>}
+              {errors.jobSatisfaction && (
+                <p className="error-message">{errors.jobSatisfaction}</p>
+              )}
             </div>
 
-            <div className="form-group">
-              <label>Income Level</label>
-              <select
-                name="income"
-                value={stepData.income || ''}
-                onChange={handleChange}
-                className={`form-control ${errors.income ? 'error' : ''}`}
-              >
-                <option value="">Select income level...</option>
-                <option value="Low">Below Average</option>
-                <option value="Average">Average</option>
-                <option value="High">Above Average</option>
-                <option value="Very High">Significantly Above Average</option>
-              </select>
-              {errors.income && <p className="error-message">{errors.income}</p>}
-            </div>
+            <FormField
+              label="Salary Per Year ($)"
+              name="income"
+              type="number"
+              value={stepData.income || ""}
+              onChange={handleChange}
+              error={errors.income}
+              placeholder="e.g., 60000"
+            />
 
             <div className="form-group">
               <label>Job Level</label>
               <select
                 name="jobLevel"
-                value={stepData.jobLevel || ''}
+                value={stepData.jobLevel || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.jobLevel ? 'error' : ''}`}
+                className={`form-control ${errors.jobLevel ? "error" : ""}`}
               >
                 <option value="">Select job level...</option>
                 <option value="Entry">Entry</option>
@@ -297,10 +329,13 @@ const FormStep: React.FC<FormStepProps> = ({
                 <option value="Senior">Senior</option>
                 <option value="Executive">Executive</option>
               </select>
-              {errors.jobLevel && <p className="error-message">{errors.jobLevel}</p>}
+              {errors.jobLevel && (
+                <p className="error-message">{errors.jobLevel}</p>
+              )}
             </div>
           </div>
         );
+
       case 4:
         return (
           <div className="form-fields">
@@ -308,9 +343,9 @@ const FormStep: React.FC<FormStepProps> = ({
               <label>Health/Exercise Habits</label>
               <select
                 name="health"
-                value={stepData.health || ''}
+                value={stepData.health || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.health ? 'error' : ''}`}
+                className={`form-control ${errors.health ? "error" : ""}`}
               >
                 <option value="">Select habit level...</option>
                 <option value="Sedentary">Sedentary</option>
@@ -319,7 +354,9 @@ const FormStep: React.FC<FormStepProps> = ({
                 <option value="Fitness Enthusiast">Fitness Enthusiast</option>
                 <option value="Athlete">Athlete</option>
               </select>
-              {errors.health && <p className="error-message">{errors.health}</p>}
+              {errors.health && (
+                <p className="error-message">{errors.health}</p>
+              )}
             </div>
           </div>
         );
@@ -330,19 +367,23 @@ const FormStep: React.FC<FormStepProps> = ({
               <label>Hobbies</label>
               <select
                 name="hobbies"
-                value={stepData.hobbies || ''}
+                value={stepData.hobbies || ""}
                 onChange={handleChange}
-                className={`form-control ${errors.hobbies ? 'error' : ''}`}
+                className={`form-control ${errors.hobbies ? "error" : ""}`}
               >
                 <option value="">Select primary hobby type...</option>
                 <option value="Creative">Creative (Art, Music, Writing)</option>
                 <option value="Physical">Physical (Sports, Fitness)</option>
-                <option value="Intellectual">Intellectual (Reading, Learning)</option>
+                <option value="Intellectual">
+                  Intellectual (Reading, Learning)
+                </option>
                 <option value="Social">Social (Gatherings, Clubs)</option>
                 <option value="Relaxing">Relaxing (TV, Games)</option>
                 <option value="None">No Strong Hobbies</option>
               </select>
-              {errors.hobbies && <p className="error-message">{errors.hobbies}</p>}
+              {errors.hobbies && (
+                <p className="error-message">{errors.hobbies}</p>
+              )}
             </div>
           </div>
         );
@@ -352,39 +393,35 @@ const FormStep: React.FC<FormStepProps> = ({
   };
 
   // Step titles and progress bar
-  const stepTitles = ['Basic Info', 'Education', 'Career', 'Health', 'Hobbies'];
+  const stepTitles = ["Basic Info", "Education", "Career", "Health", "Hobbies"];
 
   return (
     <div className="form-container">
       <div className="step-header">
         <h2 className="step-title">{stepTitles[step - 1]}</h2>
         <div className="progress-bar-container">
-          <div className="progress-bar" style={{ width: `${(step / 5) * 100}%` }}></div>
+          <div
+            className="progress-bar"
+            style={{ width: `${(step / 5) * 100}%` }}
+          ></div>
         </div>
         <p className="step-indicator">Step {step} of 5</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="form-card">
         {renderFormFields()}
-        
+
         <div className="form-buttons">
           {step > 1 ? (
-            <button
-              type="button"
-              onClick={handleBack}
-              className="back-button"
-            >
+            <button type="button" onClick={handleBack} className="back-button">
               Back
             </button>
           ) : (
             <div></div>
           )}
-          
-          <button
-            type="submit"
-            className="next-button"
-          >
-            {step === 5 ? 'Predict My Crisis' : 'Next'}
+
+          <button type="submit" className="next-button">
+            {step === 5 ? "Predict My Crisis" : "Next"}
           </button>
         </div>
       </form>

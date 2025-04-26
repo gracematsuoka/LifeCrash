@@ -369,3 +369,22 @@ select.form-control {
   font-size: 14px;
   color: #6b7280;
 }
+
+.radio-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.radio-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.radio-extreme {
+  text-align: center;
+  font-size: 0.9em;
+  color: #555;
+}
