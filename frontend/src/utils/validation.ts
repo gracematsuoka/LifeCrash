@@ -26,7 +26,7 @@ export const getFieldsForStep = (currentStep: number): string[] => {
     case 2:
       return ['education'];
     case 3:
-      return ['careerType', 'jobSatisfaction', 'income'];
+      return ['jobSatisfaction', 'income'];
     case 4:
       return ['health'];
     case 5:
