@@ -28,33 +28,39 @@ const App = () => {
 
   const handlePredict = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      const age = parseInt(formData.age);
-      const jobSatisfaction = parseInt(formData.jobSatisfaction);
-      const crisisAge = Math.min(Math.max(age + 15 + (5 - jobSatisfaction) * 2, 38), 65);
-
-      let severityBase = 10 - jobSatisfaction * 1.2;
-      if (formData.relationshipStatus.toLowerCase().includes('single')) severityBase += 1;
-      else if (formData.relationshipStatus.toLowerCase().includes('married')) severityBase -= 1;
-      const severity = Math.min(Math.max(severityBase, 1), 10);
-
-      let type = '';
-      const randFactor = Math.floor(Math.random() * 3);
-      if (jobSatisfaction <= 2) {
-        const options = ['Career change to follow passion', 'Starts a business', 'Goes back to school'];
-        type = options[randFactor];
-      } else if (formData.income.toLowerCase().includes('high')) {
-        const options = ['Buys impractical sports car', 'Takes a sabbatical year', 'Extreme hobby adoption'];
-        type = options[randFactor];
-      } else {
-        const options = ['Joins a rock band', 'Radical image change', 'Sudden travel obsession'];
-        type = options[randFactor];
-      }
-
-      setPrediction({ crisisAge: parseFloat(crisisAge.toFixed(1)), severity: parseFloat(severity.toFixed(1)), type });
+    try {
+      const dataToSend = {
+        High_School_GPA: parseFloat(formData.highSchoolGPA),
+        SAT_Score: parseInt(formData.satScore),
+        University_GPA: formData.universityGPA,
+        Field_of_Study: formData.major,
+        Internships_Completed: parseInt(formData.internshipsCompleted),
+        Career_Satisfaction: parseInt(formData.jobSatisfaction),
+        Current_Job_Level: formData.jobLevel,
+      };
+  
+      const response = await fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+      });
+  
+      const result = await response.json();
+      console.log('Prediction result from Flask:', result);
+  
+      setPrediction({
+        crisisAge: parseFloat(result.prediction.toFixed(1)),
+        severity: 5.0,     
+        type: 'Predicted by model' 
+      });
+  
       setIsLoading(false);
-      setStep(6);
-    }, 1500);
+      setStep(6); 
+    } catch (error) {
+      console.error('Error during prediction:', error);
+      setIsLoading(false);
+      alert('Prediction failed. Please try again.');
+    }
   };
 
   const renderHome = () => (
