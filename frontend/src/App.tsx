@@ -28,6 +28,7 @@ const App = () => {
 
   const handlePredict = async () => {
     setIsLoading(true);
+<<<<<<< HEAD
     try {
       const dataToSend = {
         Age: parseInt(formData.age),
@@ -40,30 +41,45 @@ const App = () => {
         Career_Satisfaction: parseInt(formData.jobSatisfaction),
         Current_Job_Level: formData.jobLevel,
       };
+=======
+    console.log("Sending data to API:", formData); // Log outgoing data
+>>>>>>> c7a9be5 (fixing api call)
   
-      const response = await fetch('http://localhost:5000/predict', {
+    try {
+      const response = await fetch('http://localhost:5001/api/predict', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+  
+      console.log(`API Response status: ${response.status}`); // Log HTTP status
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API Error: ${errorText}`);
+        throw new Error(`HTTP error ${response.status}`);
+      }
   
       const result = await response.json();
-      console.log('Prediction result from Flask:', result);
+      console.log("Received prediction result:", result); // Log response data
   
       setPrediction({
-        crisisAge: parseFloat(result.prediction.toFixed(1)),
-        severity: 5.0,     
-        type: 'Predicted by model' 
+        crisisAge: result.crisisAge,
+        severity: result.severity,
+        type: result.type,
+        aiAnalysis: result.aiAnalysis
       });
   
-      setIsLoading(false);
-      setStep(6); 
     } catch (error) {
-      console.error('Error during prediction:', error);
+      console.error('Error getting prediction from API:', error);
+    } finally {
       setIsLoading(false);
-      alert('Prediction failed. Please try again.');
+      setStep(6);
     }
   };
+  
 
   const renderHome = () => (
     <div className="home-screen">

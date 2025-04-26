@@ -4,6 +4,7 @@ interface Prediction {
   crisisAge: number;
   severity: number;
   type: string;
+  aiAnalysis?: string; // New field for AI analysis
 }
 
 interface ResultsProps {
@@ -44,6 +45,19 @@ const Results: React.FC<ResultsProps> = ({ prediction, handleStartOver }) => {
             <span className="data-label">Crisis Type</span>
             <span className="crisis-type">{prediction.type}</span>
           </div>
+          
+          {/* New section for AI Analysis */}
+          {prediction.aiAnalysis && (
+            <div className="data-item ai-analysis">
+              <span className="data-label">AI Personalized Insights</span>
+              <div className="analysis-container">
+                <p className="analysis-text">{prediction.aiAnalysis}</p>
+                <div className="analysis-disclaimer">
+                  Analysis powered by AI and based on your inputs and model predictions.
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="start-over">
