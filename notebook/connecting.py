@@ -51,7 +51,7 @@ def predict_api():
             'University_GPA': safe_float(data.get('universityGPA')),
             'Soft_Skills_Score': calculate_soft_skills(data),
             'Networking_Score': calculate_networking(data),
-            'Career_Satisfaction': safe_float(data.get('jobSatisfaction')) / 2,  # Convert from 1-10 to 1-5 scale
+            'Career_Satisfaction': safe_float(data.get('jobSatisfaction')),  
             'Work_Life_Balance': calculate_work_life_balance(data)
         }])
 
@@ -64,15 +64,17 @@ def predict_api():
         print(f"Calculated crisis age: {crisis_age}")
 
         severity = calculate_severity(prediction)
-        crisis_type = determine_crisis_type(prediction, user_data, data)
-        print(f"Severity: {severity}, Crisis Type: {crisis_type}")
+        
+        # Get the base crisis type
+        base_crisis_type = determine_crisis_type(prediction, user_data, data)
+        print(f"Base Crisis Type: {base_crisis_type}")
 
-        # Get silly crash title
-        crashout_title = get_silly_crash_title(crisis_type)
+        # Get silly crash title from the base type
+        crashout_title = get_silly_crash_title(base_crisis_type)
         print(f"Silly Crashout Title: {crashout_title}")
 
-        # Get serious prevention steps
-        prevention_steps = get_prevention_steps(data, prediction, severity, crisis_type)
+        # Get serious prevention steps - pass BOTH the silly title AND the base type
+        prevention_steps = get_prevention_steps(data, prediction, severity, crashout_title)
         print(f"Steps to Prevent: {prevention_steps}")
 
         # Make sure to convert numpy types to Python native types for JSON serialization
@@ -80,7 +82,7 @@ def predict_api():
             'prediction': float(prediction),  # Convert to Python float
             'crisisAge': int(crisis_age),     # Convert to Python int
             'severity': float(severity),      # Convert to Python float
-            'type': crashout_title,
+            'type': crashout_title,           # Use the generated silly title
             'stepsToPrevent': prevention_steps  # Make sure this is included
         }
 
@@ -174,12 +176,12 @@ def check_openai_config():
 
 def get_silly_crash_title(crisis_type):
     try:
-        prompt = f"Give a silly but creative name for a midlife crisis involving: {crisis_type}. Keep it under 6 words, make it fun."
+        prompt = f"Give a silly but creative name for a midlife crisis involving: {crisis_type}. Keep it under 5 words, make it fun."
         
         print(f"Sending OpenAI request for silly title with prompt: {prompt}")
         
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=30,
             temperature=0.9
@@ -187,17 +189,30 @@ def get_silly_crash_title(crisis_type):
         
         title = response.choices[0].message.content.strip()
         print(f"OpenAI returned silly title: {title}")
+        
+        # Remove any quotes and extra formatting
+        title = title.replace('"', '').replace("'", "").strip()
+        
+        # Ensure we return something even if the title is empty
+        if not title:
+            title = f"Hilarious {crisis_type}"
+            
         return title
     except Exception as e:
         print(f"Error getting silly crash title: {e}")
         return f"Hilarious {crisis_type}" 
 
-def get_prevention_steps(form_data, prediction, severity, crisis_type):
+def get_prevention_steps(form_data, prediction, severity, silly_title):
     try:
         age = form_data.get('age', 'unknown')
         job_satisfaction = form_data.get('jobSatisfaction', 'unknown')
         health = form_data.get('health', 'unknown')
         hobbies = form_data.get('hobbies', 'unknown')
+        education_level = form_data.get('education', 'unknown')
+        university_name = form_data.get('universityName', 'unknown')
+        university_gpa = form_data.get('universityGPA', 'unknown')
+        job_level = form_data.get('jobLevel', 'unknown')
+        relationship_status = form_data.get('relationshipStatus', 'unknown')
 
         if job_satisfaction != 'unknown' and int(job_satisfaction) > 5:
             display_satisfaction = f"{job_satisfaction}/10"
@@ -205,18 +220,21 @@ def get_prevention_steps(form_data, prediction, severity, crisis_type):
             display_satisfaction = f"{job_satisfaction}/10"
 
         prompt = f"""
-        Give helpful, practical steps this person can take to avoid a midlife crisis titled "{crisis_type}". 
+        Give helpful, practical steps this person can take to avoid a midlife crisis titled "{silly_title}".
         They are {age} years old, with job satisfaction {display_satisfaction}, health: {health}, hobbies: {hobbies}. 
+        The education level they are at is {education_level} at {university_name} with gpa of {university_gpa}. 
+        They have a job level of {job_level}. The prediction score is {prediction} and the severity is {severity}. 
+        They also have a relationship status of {relationship_status}.
         Provide 1-2 bullet points on actions they can take right now. Make these serious, actionable recommendations.
-        Format each point as a good sentence with specific advice.
+        Format each point as a good sentence with specific advice. And at the end make a short bullet point kind of bullying them for being in this situation. Making sure the steps were good but the last part is jokey. Dont add any **
         """
         
         print(f"Sending OpenAI request for prevention steps with prompt: {prompt}")
 
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=300,  
+            max_tokens=500,  
             temperature=0.7
         )
         
@@ -238,10 +256,11 @@ def calculate_networking(data):
     job_level = map_job_level_to_score(data.get('jobLevel', 'Mid'))
     hobbies = data.get('hobbies', '')
     
-    hobby_score = 4 if 'Social' in hobbies else 3
+    hobby_score = 6 if 'Social' in hobbies else 3
 
     score = (job_level * 0.7) + (hobby_score * 0.3)
     return max(min(score, 5), 1)  
+
 def calculate_work_life_balance(data):
     job_satisfaction_raw = safe_float(data.get('jobSatisfaction', 5), 5)
     
@@ -301,19 +320,19 @@ def map_health_to_score(health):
     return health_map.get(health, 3)  
 
 def calculate_severity(prediction):
-    normalized_severity = prediction * 1.25
+    normalized_severity = prediction
     
     return min(max(round(normalized_severity, 1), 1), 10)
 
 def calculate_crisis_age(current_age, prediction):
-    if prediction > 4:
+    if prediction > 8:
         years_until_crisis = 3
-    elif prediction > 3:
-        years_until_crisis = 5
-    elif prediction > 2:
+    elif prediction > 5:
         years_until_crisis = 8
+    elif prediction > 2:
+        years_until_crisis = 15
     else:
-        years_until_crisis = 12
+        years_until_crisis = 20
         
     crisis_age = current_age + years_until_crisis
     
@@ -324,9 +343,9 @@ def calculate_crisis_age(current_age, prediction):
     return min(int(crisis_age), 70) 
 
 def determine_crisis_type(prediction, user_data, form_data):
-    job_satisfaction = safe_float(form_data.get('jobSatisfaction', 5)) / 2
+    job_satisfaction = safe_float(form_data.get('jobSatisfaction', 10))
     income = form_data.get('income', '')
-    income_value = safe_float(income, 50000)
+    income_value = safe_float(income)
     hobbies = form_data.get('hobbies', '')
     
     if prediction > 4:  
@@ -336,17 +355,18 @@ def determine_crisis_type(prediction, user_data, form_data):
             return "Buys impractical sports car"
         else:
             return "Goes back to school"
-    elif prediction > 2.5:  # Medium intensity
+    elif prediction > 2.5:  
         if "Creative" in hobbies:
             return "Joins a rock band"
         elif income_value > 80000:
             return "Takes a sabbatical year"
         else:
             return "Radical image change"
-    else:  # Low intensity
+    else:
         if "Physical" in hobbies or "Fitness" in form_data.get('health', ''):
             return "Extreme hobby adoption"
         else:
             return "Sudden travel obsession"
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5001)

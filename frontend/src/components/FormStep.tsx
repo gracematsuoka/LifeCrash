@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FormData } from "../types";
 import { getFieldsForStep } from "../utils/validation";
 import FormField from "./FormField";
-import Select from 'react-select';
+import Select from "react-select";
 
 interface FormStepProps {
   step: number;
@@ -54,227 +54,226 @@ const FormStep: React.FC<FormStepProps> = ({
 
   const majorOptions = [
     // STEM Fields
-    { value: 'Computer Science', label: 'Computer Science' },
-    { value: 'Engineering', label: 'Engineering' },
-    { value: 'Electrical Engineering', label: 'Electrical Engineering' },
-    { value: 'Mechanical Engineering', label: 'Mechanical Engineering' },
-    { value: 'Civil Engineering', label: 'Civil Engineering' },
-    { value: 'Chemical Engineering', label: 'Chemical Engineering' },
-    { value: 'Aerospace Engineering', label: 'Aerospace Engineering' },
-    { value: 'Biomedical Engineering', label: 'Biomedical Engineering' },
-    { value: 'Software Engineering', label: 'Software Engineering' },
-    { value: 'Data Science', label: 'Data Science' },
-    { value: 'Mathematics', label: 'Mathematics' },
-    { value: 'Physics', label: 'Physics' },
-    { value: 'Chemistry', label: 'Chemistry' },
-    { value: 'Statistics', label: 'Statistics' },
-    { value: 'Robotics', label: 'Robotics' },
-    { value: 'Artificial Intelligence', label: 'Artificial Intelligence' },
-    { value: 'Machine Learning', label: 'Machine Learning' },
-  
+    { value: "Computer Science", label: "Computer Science" },
+    { value: "Engineering", label: "Engineering" },
+    { value: "Electrical Engineering", label: "Electrical Engineering" },
+    { value: "Mechanical Engineering", label: "Mechanical Engineering" },
+    { value: "Civil Engineering", label: "Civil Engineering" },
+    { value: "Chemical Engineering", label: "Chemical Engineering" },
+    { value: "Aerospace Engineering", label: "Aerospace Engineering" },
+    { value: "Biomedical Engineering", label: "Biomedical Engineering" },
+    { value: "Software Engineering", label: "Software Engineering" },
+    { value: "Data Science", label: "Data Science" },
+    { value: "Mathematics", label: "Mathematics" },
+    { value: "Physics", label: "Physics" },
+    { value: "Chemistry", label: "Chemistry" },
+    { value: "Statistics", label: "Statistics" },
+    { value: "Robotics", label: "Robotics" },
+    { value: "Artificial Intelligence", label: "Artificial Intelligence" },
+    { value: "Machine Learning", label: "Machine Learning" },
+
     // Business Fields
-    { value: 'Business', label: 'Business' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Marketing', label: 'Marketing' },
-    { value: 'Accounting', label: 'Accounting' },
-    { value: 'Economics', label: 'Economics' },
-    { value: 'Management', label: 'Management' },
-    { value: 'Entrepreneurship', label: 'Entrepreneurship' },
-  
+    { value: "Business", label: "Business" },
+    { value: "Finance", label: "Finance" },
+    { value: "Marketing", label: "Marketing" },
+    { value: "Accounting", label: "Accounting" },
+    { value: "Economics", label: "Economics" },
+    { value: "Management", label: "Management" },
+    { value: "Entrepreneurship", label: "Entrepreneurship" },
+
     // Humanities
-    { value: 'English', label: 'English' },
-    { value: 'History', label: 'History' },
-    { value: 'Philosophy', label: 'Philosophy' },
-    { value: 'Psychology', label: 'Psychology' },
-    { value: 'Sociology', label: 'Sociology' },
-    { value: 'Political Science', label: 'Political Science' },
-    { value: 'Communications', label: 'Communications' },
-  
+    { value: "English", label: "English" },
+    { value: "History", label: "History" },
+    { value: "Philosophy", label: "Philosophy" },
+    { value: "Psychology", label: "Psychology" },
+    { value: "Sociology", label: "Sociology" },
+    { value: "Political Science", label: "Political Science" },
+    { value: "Communications", label: "Communications" },
+
     // Arts
-    { value: 'Art', label: 'Art' },
-    { value: 'Music', label: 'Music' },
-    { value: 'Theater', label: 'Theater' },
-    { value: 'Design', label: 'Design' },
-    { value: 'Film', label: 'Film' },
-  
+    { value: "Art", label: "Art" },
+    { value: "Music", label: "Music" },
+    { value: "Theater", label: "Theater" },
+    { value: "Design", label: "Design" },
+    { value: "Film", label: "Film" },
+
     // Healthcare
-    { value: 'Medicine', label: 'Medicine' },
-    { value: 'Nursing', label: 'Nursing' },
-    { value: 'Pharmacy', label: 'Pharmacy' },
-    { value: 'Biology', label: 'Biology' },
-    { value: 'Public Health', label: 'Public Health' },
-    { value: 'Veterinary', label: 'Veterinary' },
-    { value: 'Dentistry', label: 'Dentistry' },
-  ];  
+    { value: "Medicine", label: "Medicine" },
+    { value: "Nursing", label: "Nursing" },
+    { value: "Pharmacy", label: "Pharmacy" },
+    { value: "Biology", label: "Biology" },
+    { value: "Public Health", label: "Public Health" },
+    { value: "Veterinary", label: "Veterinary" },
+    { value: "Dentistry", label: "Dentistry" },
+  ];
 
   const majorAliasMap: Record<string, string> = {
     // STEM Fields
-    'computer science': 'Computer Science',
-    'cs': 'Computer Science',
-    'comp sci': 'Computer Science',
-    'informatics': 'Computer Science',
-    
-    'engineering': 'Engineering',
-    'engineer': 'Engineering',
-    
-    'electrical engineering': 'Electrical Engineering',
-    'ee': 'Electrical Engineering',
-    'elec eng': 'Electrical Engineering',
-  
-    'mechanical engineering': 'Mechanical Engineering',
-    'mech eng': 'Mechanical Engineering',
-    'me': 'Mechanical Engineering',
-  
-    'civil engineering': 'Civil Engineering',
-    'civil eng': 'Civil Engineering',
-    'ce': 'Civil Engineering',
-  
-    'chemical engineering': 'Chemical Engineering',
-    'chem eng': 'Chemical Engineering',
-    'che': 'Chemical Engineering',
-  
-    'aerospace engineering': 'Aerospace Engineering',
-    'aero eng': 'Aerospace Engineering',
-    'aerospace': 'Aerospace Engineering',
-  
-    'biomedical engineering': 'Biomedical Engineering',
-    'biomed eng': 'Biomedical Engineering',
-    'bme': 'Biomedical Engineering',
-  
-    'software engineering': 'Software Engineering',
-    'software eng': 'Software Engineering',
-  
-    'data science': 'Data Science',
-    'data analytics': 'Data Science',
-  
-    'mathematics': 'Mathematics',
-    'math': 'Mathematics',
-    'applied math': 'Mathematics',
-  
-    'physics': 'Physics',
-    'astrophysics': 'Physics',
-    'quantum physics': 'Physics',
-  
-    'chemistry': 'Chemistry',
-    'biochemistry': 'Chemistry',
-    'chemical': 'Chemistry',
-  
-    'statistics': 'Statistics',
-    'statistical science': 'Statistics',
-  
-    'robotics': 'Robotics',
-  
-    'artificial intelligence': 'Artificial Intelligence',
-    'ai': 'Artificial Intelligence',
-  
-    'machine learning': 'Machine Learning',
-    'ml': 'Machine Learning',
-  
+    "computer science": "Computer Science",
+    cs: "Computer Science",
+    "comp sci": "Computer Science",
+    informatics: "Computer Science",
+
+    engineering: "Engineering",
+    engineer: "Engineering",
+
+    "electrical engineering": "Electrical Engineering",
+    ee: "Electrical Engineering",
+    "elec eng": "Electrical Engineering",
+
+    "mechanical engineering": "Mechanical Engineering",
+    "mech eng": "Mechanical Engineering",
+    me: "Mechanical Engineering",
+
+    "civil engineering": "Civil Engineering",
+    "civil eng": "Civil Engineering",
+    ce: "Civil Engineering",
+
+    "chemical engineering": "Chemical Engineering",
+    "chem eng": "Chemical Engineering",
+    che: "Chemical Engineering",
+
+    "aerospace engineering": "Aerospace Engineering",
+    "aero eng": "Aerospace Engineering",
+    aerospace: "Aerospace Engineering",
+
+    "biomedical engineering": "Biomedical Engineering",
+    "biomed eng": "Biomedical Engineering",
+    bme: "Biomedical Engineering",
+
+    "software engineering": "Software Engineering",
+    "software eng": "Software Engineering",
+
+    "data science": "Data Science",
+    "data analytics": "Data Science",
+
+    mathematics: "Mathematics",
+    math: "Mathematics",
+    "applied math": "Mathematics",
+
+    physics: "Physics",
+    astrophysics: "Physics",
+    "quantum physics": "Physics",
+
+    chemistry: "Chemistry",
+    biochemistry: "Chemistry",
+    chemical: "Chemistry",
+
+    statistics: "Statistics",
+    "statistical science": "Statistics",
+
+    robotics: "Robotics",
+
+    "artificial intelligence": "Artificial Intelligence",
+    ai: "Artificial Intelligence",
+
+    "machine learning": "Machine Learning",
+    ml: "Machine Learning",
+
     // Business Fields
-    'business': 'Business',
-    'business administration': 'Business',
-    'mba': 'Business',
-  
-    'finance': 'Finance',
-    'financial engineering': 'Finance',
-  
-    'marketing': 'Marketing',
-    'market research': 'Marketing',
-  
-    'accounting': 'Accounting',
-    'cpa': 'Accounting',
-  
-    'economics': 'Economics',
-    'econ': 'Economics',
-    'applied economics': 'Economics',
-  
-    'management': 'Management',
-    'entrepreneurship': 'Entrepreneurship',
-  
+    business: "Business",
+    "business administration": "Business",
+    mba: "Business",
+
+    finance: "Finance",
+    "financial engineering": "Finance",
+
+    marketing: "Marketing",
+    "market research": "Marketing",
+
+    accounting: "Accounting",
+    cpa: "Accounting",
+
+    economics: "Economics",
+    econ: "Economics",
+    "applied economics": "Economics",
+
+    management: "Management",
+    entrepreneurship: "Entrepreneurship",
+
     // Humanities
-    'english': 'English',
-    'english literature': 'English',
-    'literature': 'English',
-  
-    'history': 'History',
-    'world history': 'History',
-    'american history': 'History',
-  
-    'philosophy': 'Philosophy',
-    'ethics': 'Philosophy',
-    'logic': 'Philosophy',
-  
-    'psychology': 'Psychology',
-    'psy': 'Psychology',
-    'clinical psychology': 'Psychology',
-  
-    'sociology': 'Sociology',
-    'social science': 'Sociology',
-    'anthropology': 'Sociology',
-  
-    'political science': 'Political Science',
-    'politics': 'Political Science',
-    'government': 'Political Science',
-  
-    'communications': 'Communications',
-    'media studies': 'Communications',
-  
+    english: "English",
+    "english literature": "English",
+    literature: "English",
+
+    history: "History",
+    "world history": "History",
+    "american history": "History",
+
+    philosophy: "Philosophy",
+    ethics: "Philosophy",
+    logic: "Philosophy",
+
+    psychology: "Psychology",
+    psy: "Psychology",
+    "clinical psychology": "Psychology",
+
+    sociology: "Sociology",
+    "social science": "Sociology",
+    anthropology: "Sociology",
+
+    "political science": "Political Science",
+    politics: "Political Science",
+    government: "Political Science",
+
+    communications: "Communications",
+    "media studies": "Communications",
+
     // Arts
-    'art': 'Art',
-    'fine arts': 'Art',
-    'visual arts': 'Art',
-  
-    'music': 'Music',
-    'music theory': 'Music',
-    'composition': 'Music',
-  
-    'theater': 'Theater',
-    'theatre': 'Theater',
-    'drama': 'Theater',
-  
-    'design': 'Design',
-    'graphic design': 'Design',
-    'industrial design': 'Design',
-  
-    'film': 'Film',
-    'film studies': 'Film',
-    'cinema': 'Film',
-  
+    art: "Art",
+    "fine arts": "Art",
+    "visual arts": "Art",
+
+    music: "Music",
+    "music theory": "Music",
+    composition: "Music",
+
+    theater: "Theater",
+    theatre: "Theater",
+    drama: "Theater",
+
+    design: "Design",
+    "graphic design": "Design",
+    "industrial design": "Design",
+
+    film: "Film",
+    "film studies": "Film",
+    cinema: "Film",
+
     // Healthcare
-    'medicine': 'Medicine',
-    'pre-med': 'Medicine',
-    'md': 'Medicine',
-  
-    'nursing': 'Nursing',
-    'rn': 'Nursing',
-    'bsn': 'Nursing',
-  
-    'pharmacology': 'Pharmacy',
-    'pharmacy': 'Pharmacy',
-    'pharmd': 'Pharmacy',
-  
-    'biology': 'Biology',
-    'biological science': 'Biology',
-    'microbiology': 'Biology',
-  
-    'public health': 'Public Health',
-    'health sciences': 'Public Health',
-  
-    'veterinary': 'Veterinary',
-    'vet': 'Veterinary',
-    'dvm': 'Veterinary',
-  
-    'dentistry': 'Dentistry',
-    'dental': 'Dentistry',
-    'dds': 'Dentistry',
+    medicine: "Medicine",
+    "pre-med": "Medicine",
+    md: "Medicine",
+
+    nursing: "Nursing",
+    rn: "Nursing",
+    bsn: "Nursing",
+
+    pharmacology: "Pharmacy",
+    pharmacy: "Pharmacy",
+    pharmd: "Pharmacy",
+
+    biology: "Biology",
+    "biological science": "Biology",
+    microbiology: "Biology",
+
+    "public health": "Public Health",
+    "health sciences": "Public Health",
+
+    veterinary: "Veterinary",
+    vet: "Veterinary",
+    dvm: "Veterinary",
+
+    dentistry: "Dentistry",
+    dental: "Dentistry",
+    dds: "Dentistry",
   };
-  
 
   const handleMajorChange = (selectedOption: any) => {
-    const input = selectedOption?.value?.toLowerCase() || '';
-  
+    const input = selectedOption?.value?.toLowerCase() || "";
+
     const mappedMajor = majorAliasMap[input] || input; // default fallback if no mapping
-  
+
     setStepData((prevData) => ({
       ...prevData,
       major: mappedMajor,
@@ -306,12 +305,12 @@ const FormStep: React.FC<FormStepProps> = ({
                 className={`form-control ${errors.gender ? "error" : ""}`}
               >
                 <option value="">Select gender...</option>
-                <option value="male">Female</option>
-                <option value="female">Male</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
                 <option value="other">Other</option>
               </select>
-              {errors.relationshipStatus && (
-                <p className="error-message">{errors.relationshipStatus}</p>
+              {errors.gender && (
+                <p className="error-message">{errors.gender}</p>
               )}
             </div>
 
@@ -374,45 +373,33 @@ const FormStep: React.FC<FormStepProps> = ({
 
             {/* High School GPA - Only show if education is High School or higher */}
             {stepData.education && (
-              <div className="form-group">
-                <label>High School GPA</label>
-                <input
-                  type="number"
-                  name="highSchoolGPA"
-                  value={stepData.highSchoolGPA || ""}
-                  onChange={handleChange}
-                  placeholder="e.g., 3.5"
-                  min="0"
-                  max="4.0"
-                  step="0.01"
-                  className={`form-control ${
-                    errors.highSchoolGPA ? "error" : ""
-                  }`}
-                />
-                {errors.highSchoolGPA && (
-                  <p className="error-message">{errors.highSchoolGPA}</p>
-                )}
-              </div>
+              <FormField
+                label="High School GPA"
+                name="highSchoolGPA"
+                type="number"
+                value={stepData.highSchoolGPA || ""}
+                onChange={handleChange}
+                error={errors.highSchoolGPA}
+                placeholder="e.g., 3.5"
+                min="0"
+                max="4.0"
+                step="0.01"
+              />
             )}
 
             {/* SAT Score - Only show if education is High School or higher */}
             {stepData.education && (
-              <div className="form-group">
-                <label>SAT Score</label>
-                <input
-                  type="number"
-                  name="satScore"
-                  value={stepData.satScore || ""}
-                  onChange={handleChange}
-                  placeholder="e.g., 1200"
-                  min="400"
-                  max="1600"
-                  className={`form-control ${errors.satScore ? "error" : ""}`}
-                />
-                {errors.satScore && (
-                  <p className="error-message">{errors.satScore}</p>
-                )}
-              </div>
+              <FormField
+                label="SAT Score"
+                name="satScore"
+                type="number"
+                value={stepData.satScore || ""}
+                onChange={handleChange}
+                error={errors.satScore}
+                placeholder="e.g., 1200"
+                min="400"
+                max="1600"
+              />
             )}
 
             {/* University Information - Only show if education is Some College or higher */}
@@ -441,12 +428,14 @@ const FormStep: React.FC<FormStepProps> = ({
                     name="major"
                     options={majorOptions}
                     value={
-                      majorOptions.find(option => 
-                        option.label === majorAliasMap[(stepData.major || '').toLowerCase()]
+                      majorOptions.find(
+                        (option) =>
+                          option.label ===
+                          majorAliasMap[(stepData.major || "").toLowerCase()]
                       ) || null
                     }
                     onChange={(selectedOption: any) => {
-                      const input = selectedOption?.value?.toLowerCase() || '';
+                      const input = selectedOption?.value?.toLowerCase() || "";
                       const mappedMajor = majorAliasMap[input] || input;
                       setStepData((prevData) => ({
                         ...prevData,
@@ -470,7 +459,7 @@ const FormStep: React.FC<FormStepProps> = ({
                         return true;
                       }
 
-                      return false; 
+                      return false;
                     }}
                   />
 
@@ -479,46 +468,29 @@ const FormStep: React.FC<FormStepProps> = ({
                   )}
                 </div>
 
+                <FormField
+                  label="University GPA"
+                  name="universityGPA"
+                  type="number"
+                  value={stepData.universityGPA || ""}
+                  onChange={handleChange}
+                  error={errors.universityGPA}
+                  placeholder="e.g., 3.5"
+                  min="0"
+                  max="4.0"
+                  step="0.01"
+                />
 
-                <div className="form-group">
-                  <label>University GPA</label>
-                  <input
-                    type="number"
-                    name="universityGPA"
-                    value={stepData.universityGPA || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 3.5"
-                    min="0"
-                    max="4.0"
-                    step="0.01"
-                    className={`form-control ${
-                      errors.universityGPA ? "error" : ""
-                    }`}
-                  />
-                  {errors.universityGPA && (
-                    <p className="error-message">{errors.universityGPA}</p>
-                  )}
-                </div>
-
-                <div className="form-group">
-                  <label>Internships Completed</label>
-                  <input
-                    type="number"
-                    name="internshipsCompleted"
-                    value={stepData.internshipsCompleted || ""}
-                    onChange={handleChange}
-                    placeholder="e.g., 3"
-                    min="0"
-                    className={`form-control ${
-                      errors.internshipsCompleted ? "error" : ""
-                    }`}
-                  />
-                  {errors.internshipsCompleted && (
-                    <p className="error-message">
-                      {errors.internshipsCompleted}
-                    </p>
-                  )}
-                </div>
+                <FormField
+                  label="Internships Completed"
+                  name="internshipsCompleted"
+                  type="number"
+                  value={stepData.internshipsCompleted || ""}
+                  onChange={handleChange}
+                  error={errors.internshipsCompleted}
+                  placeholder="e.g., 3"
+                  min="0"
+                />
               </>
             )}
           </div>
@@ -526,36 +498,17 @@ const FormStep: React.FC<FormStepProps> = ({
       case 3:
         return (
           <div className="form-fields">
-            <div className="form-group">
-              <label>Job Satisfaction</label>
-              <p className="satisfaction-description">
-                How satisfied are you with your job? (1 - 10)
-              </p>
-              <div className="radio-group">
-                <span className="radio-extreme">
-                  <small>Very Unsatisfied</small>
-                </span>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                  <label key={num} className="radio-label">
-                    <input
-                      type="radio"
-                      name="jobSatisfaction"
-                      value={num.toString()}
-                      checked={stepData.jobSatisfaction === num.toString()}
-                      onChange={handleChange}
-                      className="radio-input"
-                    />
-                    <span className="radio-text">{num}</span>
-                  </label>
-                ))}
-                <span className="radio-extreme">
-                  <small>Very Satisfied</small>
-                </span>
-              </div>
-              {errors.jobSatisfaction && (
-                <p className="error-message">{errors.jobSatisfaction}</p>
-              )}
-            </div>
+            <FormField
+              label="Job Satisfaction"
+              name="jobSatisfaction"
+              type="number"
+              value={stepData.jobSatisfaction || ""}
+              onChange={handleChange}
+              error={errors.jobSatisfaction}
+              placeholder="1-10 (1 = Very Unsatisfied, 10 = Very Satisfied)"
+              min="1"
+              max="10"
+            />
 
             <FormField
               label="Salary Per Year ($)"

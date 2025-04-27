@@ -14,7 +14,6 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ prediction, handleStartOver }) => {
-  // Debug log when component receives prediction
   useEffect(() => {
     console.log("Results component received prediction:", prediction);
     if (prediction.stepsToPrevent) {
@@ -25,17 +24,14 @@ const Results: React.FC<ResultsProps> = ({ prediction, handleStartOver }) => {
     }
   }, [prediction]);
 
-  // Format prevention steps
   const formatSteps = (steps: string): React.ReactNode[] => {
     if (!steps) return [<p key="no-steps">No prevention steps available.</p>];
     
-    // Split by numbered lines or bullet points
     const formattedSteps: React.ReactNode[] = [];
     
     const lines = steps.split('\n').filter(line => line.trim() !== '');
     
     lines.forEach((line, index) => {
-      // Check if line starts with a number followed by a period or a dash
       if (line.match(/^\d+\./) || line.match(/^-\s/)) {
         formattedSteps.push(
           <p key={index} className="prevention-step">
@@ -43,12 +39,31 @@ const Results: React.FC<ResultsProps> = ({ prediction, handleStartOver }) => {
             {' ' + line.replace(/^\d+\.|-\s/, '')}
           </p>
         );
+      } else if (line.match(/^\*/)) {
+        formattedSteps.push(
+          <p key={index} className="prevention-step">
+            <strong>•</strong>
+            {' ' + line.replace(/^\*+\s*/, '')}
+          </p>
+        );
+      } else if (line.match(/^#{1,6}\s/)) {
+        const headerLevel = line.match(/^(#{1,6})\s/)?.[1].length || 3;
+        const text = line.replace(/^#{1,6}\s/, '');
+        formattedSteps.push(
+          React.createElement(`h${headerLevel}`, { key: index, className: "prevention-header" }, text)
+        );
       } else {
         formattedSteps.push(<p key={index}>{line}</p>);
       }
     });
     
     return formattedSteps;
+  };
+
+  // Format crisis type by removing quotes and ensuring it's displayed correctly
+  const formatCrisisType = (type: string): string => {
+    // Remove quotes and trim whitespace
+    return type.replace(/['"]/g, '').trim();
   };
 
   return (
@@ -81,26 +96,24 @@ const Results: React.FC<ResultsProps> = ({ prediction, handleStartOver }) => {
           
           <div className="data-item">
             <span className="data-label">Crisis Type: </span>
-            <span className="crisis-type">{prediction.type.replace(/"/g, '')}</span>
+            <span className="crisis-type">{formatCrisisType(prediction.type)}</span>
           </div>
           
           {/* Prevention Steps Section */}
           <div className="data-item prevention-analysis">
-            
-              <div className="prevention-steps">
-                <h3>Steps to Prevent Your Crisis</h3>
-                <div className="steps-content">
-                  {prediction.stepsToPrevent ? 
-                    formatSteps(prediction.stepsToPrevent) : 
-                    <p>No prevention steps available.</p>
-                  }
-                </div>
-              </div>
-              <div className="analysis-disclaimer">
-                Analysis based on your inputs and model predictions. Take action now to avoid your predicted crisis.
+            <div className="prevention-steps">
+              <h3>Steps to Prevent Your Crisis</h3>
+              <div className="steps-content">
+                {prediction.stepsToPrevent ? 
+                  formatSteps(prediction.stepsToPrevent) : 
+                  <p>No prevention steps available.</p>
+                }
               </div>
             </div>
-        
+            <div className="analysis-disclaimer">
+              Analysis based on your inputs and model predictions. Take action now to avoid your predicted crisis.
+            </div>
+          </div>
         </div>
         
         <div className="start-over">
