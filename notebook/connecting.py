@@ -32,6 +32,7 @@ except Exception as e:
     print("Using dummy model for testing")
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/api/predict', methods=['POST'])
 def predict_api():

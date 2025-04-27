@@ -311,15 +311,10 @@ const FormStep: React.FC<FormStepProps> = ({
   };
 
   const handleMajorChange = (selectedOption: any) => {
-    const input =
-      selectedOption?.value?.toLowerCase() || "";
-
-    const mappedMajor = majorAliasMap[input] || input; // default fallback if no mapping
-
-    setStepData((prevData) => ({
-      ...prevData,
-      major: mappedMajor,
-    }));
+    setStepData({
+      ...stepData,
+      major: selectedOption ? selectedOption.value : ""
+    });
   };
 
   const renderFormFields = () => {
@@ -410,9 +405,6 @@ const FormStep: React.FC<FormStepProps> = ({
                 }`}
               >
                 <option value="">Select level...</option>
-                <option value="High School">
-                  High School
-                </option>
                 <option value="Some College">
                   Some College
                 </option>
@@ -490,64 +482,40 @@ const FormStep: React.FC<FormStepProps> = ({
 
                   <div className="form-group">
                     <label>Major</label>
-                    <input
-                      type="text"
+                    <Select
                       name="major"
                       options={majorOptions}
                       value={
-                        majorOptions.find(
-                          (option) =>
-                            option.label ===
-                            majorAliasMap[
-                              (
-                                stepData.major || ""
-                              ).toLowerCase()
-                            ]
-                        ) || null
+                        stepData.major
+                          ? majorOptions.find(
+                              (option) => option.value === stepData.major
+                            )
+                          : null
                       }
-                      onChange={(selectedOption: any) => {
-                        const input =
-                          selectedOption?.value?.toLowerCase() ||
-                          "";
-                        const mappedMajor =
-                          majorAliasMap[input] || input;
-                        setStepData((prevData) => ({
-                          ...prevData,
-                          major: mappedMajor,
-                        }));
-                      }}
+                      onChange={handleMajorChange}
                       placeholder="Select your major"
                       classNamePrefix="react-select"
                       isClearable
                       isSearchable
-                      filterOption={(
-                        option,
-                        inputValue
-                      ) => {
-                        const searchInput =
-                          inputValue.toLowerCase();
-                        const candidate =
-                          option.label.toLowerCase();
+                      className={`${errors.major ? "error" : ""}`}
+                      filterOption={(option, inputValue) => {
+                        const searchInput = inputValue.toLowerCase();
+                        const candidate = option.label.toLowerCase();
 
-                        if (
-                          candidate.includes(searchInput)
-                        ) {
+                        if (candidate.includes(searchInput)) {
                           return true;
                         }
 
-                        const mappedInput =
-                          majorAliasMap[searchInput];
-                        if (
-                          mappedInput &&
-                          mappedInput === option.label
-                        ) {
-                          return true;
+                        // Check for aliases
+                        for (const [alias, major] of Object.entries(majorAliasMap)) {
+                          if (alias.includes(searchInput) && major === option.value) {
+                            return true;
+                          }
                         }
 
                         return false;
                       }}
                     />
-
                     {errors.major && (
                       <p className="error-message">
                         {errors.major}
