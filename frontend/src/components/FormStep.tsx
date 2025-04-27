@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FormData } from "../types";
 import { getFieldsForStep } from "../utils/validation";
 import FormField from "./FormField";
 import Select from "react-select";
+import {universityOptions as preloadedUniversityOptions } from "../data/universityOptions";
 
 interface FormStepProps {
   step: number;
@@ -35,6 +36,27 @@ const FormStep: React.FC<FormStepProps> = ({
 
     return initialData;
   });
+
+  // This state is kept for backward compatibility but won't be actively used
+  const [universities, setUniversities] = useState<Array<{name: string, city: string, ranking: number}>>([]);
+  const [isLoadingUniversities, setIsLoadingUniversities] = useState<boolean>(false);
+
+  // Load universities when on education step
+  useEffect(() => {
+    if (step === 2) {
+      // Nothing to do here anymore since we're using preloaded data
+      setIsLoadingUniversities(false);
+    }
+  }, [step]);
+
+  // Default universities in case data fails to load
+  const defaultUniversities = [
+    { name: "Harvard University", city: "Cambridge, MA", ranking: 1 },
+    { name: "Stanford University", city: "Stanford, CA", ranking: 2 },
+    { name: "Massachusetts Institute of Technology", city: "Cambridge, MA", ranking: 3 },
+    { name: "University of California, Berkeley", city: "Berkeley, CA", ranking: 4 },
+    { name: "University of Michigan", city: "Ann Arbor, MI", ranking: 5 }
+  ];
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -147,6 +169,10 @@ const FormStep: React.FC<FormStepProps> = ({
     { value: "Veterinary", label: "Veterinary" },
     { value: "Dentistry", label: "Dentistry" },
   ];
+
+  // Generate university options for the React-Select dropdown
+  // Simply use the preloaded options directly - they're already in the right format
+  const universityOptions = preloadedUniversityOptions;
 
   const majorAliasMap: Record<string, string> = {
     // STEM Fields
@@ -317,6 +343,20 @@ const FormStep: React.FC<FormStepProps> = ({
     });
   };
 
+  const handleUniversityChange = (selectedOption: any) => {
+    setStepData({
+      ...stepData,
+      universityName: selectedOption ? selectedOption.value : "",
+      universityRanking: selectedOption && selectedOption.data ? selectedOption.data.ranking : null
+    });
+  };
+
+  // Simple filter function that just searches by university name
+  const filterUniversities = (option: any, inputValue: string) => {
+    const searchInput = inputValue.toLowerCase();
+    return option.label.toLowerCase().includes(searchInput);
+  };
+
   const renderFormFields = () => {
     switch (step) {
       case 1:
@@ -463,15 +503,23 @@ const FormStep: React.FC<FormStepProps> = ({
                 <>
                   <div className="form-group">
                     <label>University Name</label>
-                    <input
-                      type="text"
+                    <Select
                       name="universityName"
-                      value={stepData.universityName || ""}
-                      onChange={handleChange}
-                      placeholder="Enter university name"
-                      className={`form-control ${
-                        errors.universityName ? "error" : ""
-                      }`}
+                      options={universityOptions}
+                      value={
+                        stepData.universityName
+                          ? universityOptions.find(
+                              (option) => option.value === stepData.universityName
+                            )
+                          : null
+                      }
+                      onChange={handleUniversityChange}
+                      placeholder="Select your university"
+                      classNamePrefix="react-select"
+                      isClearable
+                      isSearchable
+                      className={`${errors.universityName ? "error" : ""}`}
+                      filterOption={filterUniversities}
                     />
                     {errors.universityName && (
                       <p className="error-message">

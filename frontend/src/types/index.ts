@@ -15,6 +15,7 @@ export interface FormData {
   jobLevel: string;
   health: string;
   hobbies: string;
+  universityRanking: number;
 }
 
 // Consolidated Prediction interface

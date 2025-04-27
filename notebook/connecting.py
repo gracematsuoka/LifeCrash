@@ -40,6 +40,10 @@ def predict_api():
         print("Received request at /api/predict")
         data = request.json
         print(f"Incoming JSON data: {data}")
+        
+        # Debug logs for university data
+        print(f"University Name: {data.get('universityName')}")
+        print(f"University Ranking: {data.get('universityRanking')}")
 
         def safe_float(value, default=0.0):
             try:
@@ -92,6 +96,7 @@ def predict_api():
     except Exception as e:
         print(f"Error in prediction API: {e}")
         return jsonify({'error': str(e)}), 400
+
 # --- Test endpoints for OpenAI functions ---
 
 @app.route('/api/test-silly-title', methods=['POST'])
@@ -210,6 +215,7 @@ def get_prevention_steps(form_data, prediction, severity, silly_title):
         hobbies = form_data.get('hobbies', 'unknown')
         education_level = form_data.get('education', 'unknown')
         university_name = form_data.get('universityName', 'unknown')
+        university_ranking = form_data.get('universityRanking')
         university_gpa = form_data.get('universityGPA', 'unknown')
         job_level = form_data.get('jobLevel', 'unknown')
         relationship_status = form_data.get('relationshipStatus', 'unknown')
@@ -218,11 +224,16 @@ def get_prevention_steps(form_data, prediction, severity, silly_title):
             display_satisfaction = f"{job_satisfaction}/10"
         else:
             display_satisfaction = f"{job_satisfaction}/10"
+            
+        # Create a description of the university with ranking if available
+        university_description = university_name
+        if university_ranking is not None:
+            university_description = f"{university_name} (ranked #{university_ranking})"
 
         prompt = f"""
         Give helpful, practical steps this person can take to avoid a midlife crisis titled "{silly_title}".
         They are {age} years old, with job satisfaction {display_satisfaction}, health: {health}, hobbies: {hobbies}. 
-        The education level they are at is {education_level} at {university_name} with gpa of {university_gpa}. 
+        The education level they are at is {education_level} at {university_description} with gpa of {university_gpa}. 
         They have a job level of {job_level}. The prediction score is {prediction} and the severity is {severity}. 
         They also have a relationship status of {relationship_status}.
         Provide 1-2 bullet points on actions they can take right now. Make these serious, actionable recommendations.
