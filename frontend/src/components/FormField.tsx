@@ -8,6 +8,7 @@ interface FormFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   placeholder?: string;
+  min?: string;
 }
 
 const FormField: React.FC<FormFieldProps> = ({ 

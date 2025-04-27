@@ -1,18 +1,44 @@
 /* Base styles */
-html{
-  background-color: rgba(31, 41, 55, 0.85);
-}
-
-body {
+html, body {
   margin: 0;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  padding: 0;
+  height: 100%;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background: linear-gradient(rgba(255, 226, 159, 0.8), rgba(255, 113, 154, 0.8)),
               url('https://images.unsplash.com/photo-1584447112345-2a54e9d64c5a?auto=format&fit=crop&w=1400&q=80') no-repeat center center fixed;
   background-size: cover;
   color: #2d2d2d;
   min-height: 100vh;
   overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container, .form-container, .results-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 /* Floating background elements */
@@ -42,43 +68,21 @@ body::after {
   to { transform: translateY(20px) rotate(360deg); }
 }
 
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 20px;
-}
-
-.container, .form-container, .results-container {
-  max-width: 600px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 20px;
-}
-
-/* Footer */
+/* Footer - Full width and sticky bottom */
 .footer {
+  width: 100%;
   background-color: rgba(31, 41, 55, 0.85);
   color: #ffe3ec;
   padding: 15px;
   text-align: center;
   font-size: 14px;
-  margin-top: auto;
-  width: 100%;
   font-style: italic;
   letter-spacing: 0.5px;
   border-top: 2px solid #ff4d6d;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  position: relative;
+  bottom: 0;
+  left: 0;
 }
 
 /* Home page */
@@ -140,7 +144,7 @@ body::after {
 .form-card, .results-card {
   background: linear-gradient(145deg, #fff5f5, #ffe3ec);
   border-radius: 20px;
-  padding: 35px;
+  padding: 40px 35px;
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
   transition: transform 0.2s ease;
@@ -159,6 +163,24 @@ body::after {
   color: #ff4d6d;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
 }
 
 .form-control {
@@ -208,7 +230,34 @@ body::after {
   background-color: #ddd;
 }
 
-/* Results */
+/* Error State for Inputs & Selects */
+.form-control.error {
+  border: 2px solid #ef4444;
+  background-color: #fff5f5;
+  color: #b91c1c;
+  animation: shake 0.3s;
+}
+
+.form-control.error::placeholder {
+  color: #f87171;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Results Display */
 .data-label {
   font-size: 16px;
   color: #888;
@@ -319,80 +368,48 @@ body::after {
   color: #6b7280;
 }
 
-.ai-analysis {
-  border-top: 2px dashed #ff4d6d;
-  padding-top: 20px;
-  margin-top: 30px;
-  animation: fadeIn 1s ease;
+/* Add these styles to your existing CSS */
+
+.prevention-analysis {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 77, 109, 0.2);
+}
+
+.prevention-steps h3 {
+  color: #ff4d6d;
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.steps-content {
+  line-height: 1.6;
+  color: #374151;
+  font-size: 16px;
+}
+
+.steps-content strong {
+  color: #ff4d6d;
+  font-weight: 700;
+  display: inline-block;
+  margin-right: 5px;
 }
 
 .analysis-container {
-  background: #fff3f5;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(255, 77, 109, 0.2);
-  margin-top: 10px;
-  position: relative;
-}
-
-.analysis-text {
-  line-height: 1.6;
-  color: #333;
-  white-space: pre-line;
-  margin: 0;
+  margin-top: 15px;
 }
 
 .analysis-disclaimer {
-  font-size: 12px;
-  color: #888;
-  margin-top: 15px;
-  text-align: right;
-  font-style: italic;
-}
-
-.analysis-disclaimer::before {
-  content: "🧐 ";
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Error State for Inputs & Selects */
-.form-control.error {
-  border: 2px solid #ef4444;
-  background-color: #fff5f5;
-  color: #b91c1c;
-}
-
-.form-control.error::placeholder {
-  color: #f87171;
-}
-
-.error-message {
-  color: #ef4444;
+  margin-top: 20px;
   font-size: 14px;
-  margin-top: 5px;
-  font-weight: 500;
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
 }
-
-/* Optional: Add a slight shake animation on error if you want */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
-}
-
-.form-control.error {
-  animation: shake 0.3s;
-}
-

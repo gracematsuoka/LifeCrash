@@ -51,7 +51,7 @@ def predict_api():
             'University_GPA': safe_float(data.get('universityGPA')),
             'Soft_Skills_Score': calculate_soft_skills(data),
             'Networking_Score': calculate_networking(data),
-            'Career_Satisfaction': safe_float(data.get('jobSatisfaction')),
+            'Career_Satisfaction': safe_float(data.get('jobSatisfaction')) / 2,  # Convert from 1-10 to 1-5 scale
             'Work_Life_Balance': calculate_work_life_balance(data)
         }])
 
@@ -75,21 +75,21 @@ def predict_api():
         prevention_steps = get_prevention_steps(data, prediction, severity, crisis_type)
         print(f"Steps to Prevent: {prevention_steps}")
 
+        # Make sure to convert numpy types to Python native types for JSON serialization
         response = {
-            'prediction': float(prediction),
-            'crisisAge': crisis_age,
-            'severity': severity,
+            'prediction': float(prediction),  # Convert to Python float
+            'crisisAge': int(crisis_age),     # Convert to Python int
+            'severity': float(severity),      # Convert to Python float
             'type': crashout_title,
-            'stepsToPrevent': prevention_steps
+            'stepsToPrevent': prevention_steps  # Make sure this is included
         }
 
         print("Sending response:", response)
-        return jsonify(response)
+        return jsonify(response)  # jsonify will serialize the response
 
     except Exception as e:
         print(f"Error in prediction API: {e}")
         return jsonify({'error': str(e)}), 400
-
 # --- Test endpoints for OpenAI functions ---
 
 @app.route('/api/test-silly-title', methods=['POST'])
@@ -190,7 +190,7 @@ def get_silly_crash_title(crisis_type):
         return title
     except Exception as e:
         print(f"Error getting silly crash title: {e}")
-        return f"Hilarious {crisis_type}"  # Fallback title if OpenAI fails
+        return f"Hilarious {crisis_type}" 
 
 def get_prevention_steps(form_data, prediction, severity, crisis_type):
     try:
@@ -199,10 +199,16 @@ def get_prevention_steps(form_data, prediction, severity, crisis_type):
         health = form_data.get('health', 'unknown')
         hobbies = form_data.get('hobbies', 'unknown')
 
+        if job_satisfaction != 'unknown' and int(job_satisfaction) > 5:
+            display_satisfaction = f"{job_satisfaction}/10"
+        else:
+            display_satisfaction = f"{job_satisfaction}/10"
+
         prompt = f"""
         Give helpful, practical steps this person can take to avoid a midlife crisis titled "{crisis_type}". 
-        They are {age} years old, with job satisfaction {job_satisfaction}/5, health: {health}, hobbies: {hobbies}. 
-        Provide 3-4 bullet points on actions they can take right now.
+        They are {age} years old, with job satisfaction {display_satisfaction}, health: {health}, hobbies: {hobbies}. 
+        Provide 1-2 bullet points on actions they can take right now. Make these serious, actionable recommendations.
+        Format each point as a good sentence with specific advice.
         """
         
         print(f"Sending OpenAI request for prevention steps with prompt: {prompt}")
@@ -210,7 +216,7 @@ def get_prevention_steps(form_data, prediction, severity, crisis_type):
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=150,
+            max_tokens=300,  
             temperature=0.7
         )
         
@@ -221,41 +227,33 @@ def get_prevention_steps(form_data, prediction, severity, crisis_type):
         print(f"Error getting prevention steps: {e}")
         return "Unable to generate prevention advice at this time."
 
-# Helper functions for calculating missing features - based on your notebook
 def calculate_soft_skills(data):
-    # Example calculation for soft skills based on job level and education
     education_level = map_education_to_level(data.get('education', 'Bachelor'))
     job_level = map_job_level_to_score(data.get('jobLevel', 'Mid'))
     
-    # Simple formula: combine education and job level
     score = (education_level * 0.6) + (job_level * 0.4)
-    return max(min(score, 5), 1)  # Keep between 1-5
+    return max(min(score, 5), 1)  
 
 def calculate_networking(data):
-    # Example calculation for networking score
     job_level = map_job_level_to_score(data.get('jobLevel', 'Mid'))
     hobbies = data.get('hobbies', '')
     
-    # Social hobbies indicate better networking
     hobby_score = 4 if 'Social' in hobbies else 3
-    
-    # Higher job levels typically correlate with better networking
-    score = (job_level * 0.7) + (hobby_score * 0.3)
-    return max(min(score, 5), 1)  # Keep between 1-5
 
+    score = (job_level * 0.7) + (hobby_score * 0.3)
+    return max(min(score, 5), 1)  
 def calculate_work_life_balance(data):
-    # Example calculation for work-life balance
-    job_satisfaction = safe_float(data.get('jobSatisfaction', 3), 3)
+    job_satisfaction_raw = safe_float(data.get('jobSatisfaction', 5), 5)
+    
+    job_satisfaction = job_satisfaction_raw / 2
+    
     hobbies = data.get('hobbies', '')
     
-    # Having any hobbies indicates better work-life balance
     hobby_factor = 4 if hobbies else 2
     
-    # Simple formula
     score = (job_satisfaction * 0.5) + (hobby_factor * 0.5)
-    return max(min(score, 5), 1)  # Keep between 1-5
+    return max(min(score, 5), 1)
 
-# Additional helper functions
 def safe_float(value, default=0.0):
     try:
         return float(value)
@@ -266,6 +264,8 @@ def map_education_to_level(education):
     education_map = {
         'High School': 1,
         'Associate': 2,
+        'Associate\'s Degree': 2,
+        'Some College': 2,
         'Bachelor': 3,
         'Bachelor\'s Degree': 3,
         'Master': 4,
@@ -273,7 +273,7 @@ def map_education_to_level(education):
         'Doctorate': 5,
         'PhD': 5
     }
-    return education_map.get(education, 3)  # Default to Bachelor level
+    return education_map.get(education, 3)  
 
 def map_job_level_to_score(job_level):
     level_map = {
@@ -282,58 +282,61 @@ def map_job_level_to_score(job_level):
         'Senior': 4,
         'Executive': 5
     }
-    return level_map.get(job_level, 3)  # Default to Mid level
+    return level_map.get(job_level, 3)
 
 def map_health_to_score(health):
     health_map = {
         'Poor': 1,
+        'Sedentary': 1,
         'Below Average': 2,
+        'Occasional': 2,
         'Average': 3,
+        'Regular': 3,
         'Active': 4,
         'Fitness Enthusiast': 5,
+        'Athlete': 5,
         'Above Average': 4,
         'Excellent': 5
     }
-    return health_map.get(health, 3)  # Default to Average
+    return health_map.get(health, 3)  
+
+def calculate_severity(prediction):
+    normalized_severity = prediction * 1.25
+    
+    return min(max(round(normalized_severity, 1), 1), 10)
 
 def calculate_crisis_age(current_age, prediction):
-    # Based on your notebook code, prediction is Crisis_Intensity
-    # Lower number means more severe crisis
-    if prediction < 2:
+    if prediction > 4:
         years_until_crisis = 3
-    elif prediction < 3:
+    elif prediction > 3:
         years_until_crisis = 5
-    elif prediction < 4:
+    elif prediction > 2:
         years_until_crisis = 8
     else:
         years_until_crisis = 12
         
     crisis_age = current_age + years_until_crisis
-    return min(max(int(crisis_age), 35), 70)  # Keep between 35-70 and whole number
-
-def calculate_severity(prediction):
-    # Based on images, lower prediction means higher crisis intensity
-    # So we invert it for the severity display (10 = max severity)
-    max_prediction = 5  # Based on the scale seen in the plots
-    severity = max_prediction - prediction
-    normalized_severity = (severity / max_prediction) * 10
-    return min(max(round(normalized_severity, 1), 1), 10)  # Keep between 1-10
+    
+    if current_age < 18:
+        extra_years = max(0, 30 - current_age) * (1 - (prediction / 10))
+        crisis_age += int(extra_years)
+    
+    return min(int(crisis_age), 70) 
 
 def determine_crisis_type(prediction, user_data, form_data):
-    job_satisfaction = safe_float(form_data.get('jobSatisfaction', 5))
+    job_satisfaction = safe_float(form_data.get('jobSatisfaction', 5)) / 2
     income = form_data.get('income', '')
     income_value = safe_float(income, 50000)
     hobbies = form_data.get('hobbies', '')
     
-    # Based on your notebook's assign_crisis_type function
-    if prediction < 2:  # High intensity crisis
+    if prediction > 4:  
         if job_satisfaction <= 2:
             return "Career change to follow passion"
         elif income_value > 100000:
             return "Buys impractical sports car"
         else:
             return "Goes back to school"
-    elif prediction < 3.5:  # Medium intensity
+    elif prediction > 2.5:  # Medium intensity
         if "Creative" in hobbies:
             return "Joins a rock band"
         elif income_value > 80000:
@@ -345,6 +348,5 @@ def determine_crisis_type(prediction, user_data, form_data):
             return "Extreme hobby adoption"
         else:
             return "Sudden travel obsession"
-
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5001)

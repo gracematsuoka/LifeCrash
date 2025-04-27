@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FormData } from "../types";
 import { getFieldsForStep } from "../utils/validation";
 import FormField from "./FormField";
-import Select from'react-select';
+import Select from 'react-select';
 
 interface FormStepProps {
   step: number;
@@ -294,6 +294,7 @@ const FormStep: React.FC<FormStepProps> = ({
               onChange={handleChange}
               error={errors.age}
               placeholder="Enter your age"
+              min="0"
             />
 
             <div className="form-group">
@@ -344,6 +345,7 @@ const FormStep: React.FC<FormStepProps> = ({
               onChange={handleChange}
               error={errors.children}
               placeholder="How many children do you have?"
+              min="0"
             />
           </div>
         );
@@ -506,6 +508,7 @@ const FormStep: React.FC<FormStepProps> = ({
                     value={stepData.internshipsCompleted || ""}
                     onChange={handleChange}
                     placeholder="e.g., 3"
+                    min="0"
                     className={`form-control ${
                       errors.internshipsCompleted ? "error" : ""
                     }`}
@@ -526,13 +529,13 @@ const FormStep: React.FC<FormStepProps> = ({
             <div className="form-group">
               <label>Job Satisfaction</label>
               <p className="satisfaction-description">
-                How satisfied are you with your job? (1 - 5)
+                How satisfied are you with your job? (1 - 10)
               </p>
               <div className="radio-group">
                 <span className="radio-extreme">
                   <small>Very Unsatisfied</small>
                 </span>
-                {[1, 2, 3, 4, 5].map((num) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                   <label key={num} className="radio-label">
                     <input
                       type="radio"
@@ -562,6 +565,7 @@ const FormStep: React.FC<FormStepProps> = ({
               onChange={handleChange}
               error={errors.income}
               placeholder="e.g., 60000"
+              min="0"
             />
 
             <div className="form-group">

@@ -40,7 +40,7 @@ const App: React.FC = () => {
         body: JSON.stringify(formData),
       });
       
-      console.log(`API Response status: ${response.status}`); 
+      console.log(`API Response status: ${response.status}`);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -49,13 +49,23 @@ const App: React.FC = () => {
       }
       
       const result = await response.json();
-      console.log("Received prediction result:", result); // Log response data
+      console.log("Received prediction result:", result); // Log the full response
       
+      // Check if stepsToPrevent exists in the result
+      if (result.stepsToPrevent) {
+        console.log("Steps to prevent found:", result.stepsToPrevent);
+      } else {
+        console.log("No stepsToPrevent in response");
+      }
+      
+      // Create a new prediction object with all possible fields
       setPrediction({
         crisisAge: result.crisisAge,
         severity: result.severity,
         type: result.type,
-        aiAnalysis: result.aiAnalysis
+        // Use the stepsToPrevent or "No steps provided" if it doesn't exist
+        stepsToPrevent: result.stepsToPrevent || "No steps provided",
+        prediction: result.prediction
       });
     } catch (error) {
       console.error('Error getting prediction from API:', error);
@@ -114,7 +124,7 @@ const App: React.FC = () => {
           </div>
         )}
       </div>
-      <footer className="footer">LifeCrash™ | Disclaimer: For entertainment purposes only</footer>
+      <footer className="footer">LifeCrash™ | Disclaimer: Based on ACTUAL data</footer>
     </div>
   );
 };
