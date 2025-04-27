@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
-import { FormData, Prediction } from './types';
-import { initialFormData, validateForm } from './utils/validation';
-import FormStep from './components/FormStep';
-import Results from './components/Results';
-import './styles/App.css';
+import React, { useState } from "react";
+import FormStep from "./components/FormStep";
+import Results from "./components/Results";
+import {
+  initialFormData,
+  validateForm,
+} from "./utils/validation";
+import { FormData, Prediction } from "./types";
+import "./styles/App.css";
 
-const App = () => {
+const App: React.FC = () => {
   const [step, setStep] = useState(0); // 0 = Home, 1-5 = Forms, 6 = Results
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [formData, setFormData] =
+    useState<FormData>(initialFormData);
+  const [errors, setErrors] = useState<Partial<FormData>>(
+    {}
+  );
+  const [prediction, setPrediction] =
+    useState<Prediction | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNext = (stepData: Partial<FormData>) => {
     if (!validateForm(stepData, step, setErrors)) return;
-    setFormData(prev => ({ ...prev, ...stepData }));
-    setStep(prev => prev + 1);
+    setFormData((prev) => ({ ...prev, ...stepData }));
+    setStep((prev) => prev + 1);
   };
 
-  const handleBack = () => setStep(prev => prev - 1);
+  const handleBack = () => setStep((prev) => prev - 1);
 
   const handleStartOver = () => {
     setStep(0);
@@ -28,40 +35,72 @@ const App = () => {
 
   const handlePredict = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      const age = parseInt(formData.age);
-      const jobSatisfaction = parseInt(formData.jobSatisfaction);
-      const crisisAge = Math.min(Math.max(age + 15 + (5 - jobSatisfaction) * 2, 38), 65);
+    console.log("Sending data to API:", formData);
 
-      let severityBase = 10 - jobSatisfaction * 1.2;
-      if (formData.relationshipStatus.toLowerCase().includes('single')) severityBase += 1;
-      else if (formData.relationshipStatus.toLowerCase().includes('married')) severityBase -= 1;
-      const severity = Math.min(Math.max(severityBase, 1), 10);
+    try {
+      const response = await fetch(
+        "http://localhost:5001/api/predict",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      let type = '';
-      const randFactor = Math.floor(Math.random() * 3);
-      if (jobSatisfaction <= 2) {
-        const options = ['Career change to follow passion', 'Starts a business', 'Goes back to school'];
-        type = options[randFactor];
-      } else if (formData.income.toLowerCase().includes('high')) {
-        const options = ['Buys impractical sports car', 'Takes a sabbatical year', 'Extreme hobby adoption'];
-        type = options[randFactor];
-      } else {
-        const options = ['Joins a rock band', 'Radical image change', 'Sudden travel obsession'];
-        type = options[randFactor];
+      console.log(
+        `API Response status: ${response.status}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API Error: ${errorText}`);
+        throw new Error(`HTTP error ${response.status}`);
       }
 
-      setPrediction({ crisisAge: parseFloat(crisisAge.toFixed(1)), severity: parseFloat(severity.toFixed(1)), type });
+      const result = await response.json();
+      console.log("Received prediction result:", result); // Log the full response
+
+      // Check if stepsToPrevent exists in the result
+      if (result.stepsToPrevent) {
+        console.log(
+          "Steps to prevent found:",
+          result.stepsToPrevent
+        );
+      } else {
+        console.log("No stepsToPrevent in response");
+      }
+
+      // Create a new prediction object with all possible fields
+      setPrediction({
+        crisisAge: result.crisisAge,
+        severity: result.severity,
+        type: result.type,
+        // Use the stepsToPrevent or "No steps provided" if it doesn't exist
+        stepsToPrevent:
+          result.stepsToPrevent || "No steps provided",
+        prediction: result.prediction,
+      });
+    } catch (error) {
+      console.error(
+        "Error getting prediction from API:",
+        error
+      );
+      // You might want to set an error state here to display to the user
+    } finally {
       setIsLoading(false);
-      setStep(6);
-    }, 1500);
+      setStep(6); // Consider only moving to step 6 if there was no error
+    }
   };
 
   const renderHome = () => (
     <div className="home-screen">
       <div className="home-content">
         <h1 className="app-title">LifeCrash™</h1>
-        <p className="app-subtitle">Predict your midlife crisis before it hits!</p>
+        <p className="app-subtitle">
+          Predict your midlife crisis before it hits!
+        </p>
       </div>
       <button
         onClick={() => setStep(1)}
@@ -99,13 +138,20 @@ const App = () => {
           <div className="loading-overlay">
             <div className="loading-card">
               <div className="spinner"></div>
-              <p className="loading-text">Analyzing your life choices...</p>
-              <p className="loading-subtext">Please wait while we predict your future crisis.</p>
+              <p className="loading-text">
+                Analyzing your life choices...
+              </p>
+              <p className="loading-subtext">
+                Please wait while we predict your future
+                crisis.
+              </p>
             </div>
           </div>
         )}
       </div>
-      <footer className="footer">LifeCrash™ | Disclaimer: For entertainment purposes only</footer>
+      <footer className="footer">
+        LifeCrash™ | Disclaimer: Based on ACTUAL data
+      </footer>
     </div>
   );
 };
