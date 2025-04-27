@@ -181,7 +181,7 @@ def check_openai_config():
 
 def get_silly_crash_title(crisis_type):
     try:
-        prompt = f"Give a silly but creative name for a midlife crisis involving: {crisis_type}. Keep it under 5 words, make it fun."
+        prompt = f"Make a funny name for a midlife crisis scenario where someone is experiencing a '{crisis_type}'. The title should be funny but easy to understand. Make sure its under 5 words."
         
         print(f"Sending OpenAI request for silly title with prompt: {prompt}")
         
@@ -216,6 +216,7 @@ def get_prevention_steps(form_data, prediction, severity, silly_title):
         education_level = form_data.get('education', 'unknown')
         university_name = form_data.get('universityName', 'unknown')
         university_ranking = form_data.get('universityRanking')
+        major = form_data.get('major', 'unknown')
         university_gpa = form_data.get('universityGPA', 'unknown')
         job_level = form_data.get('jobLevel', 'unknown')
         relationship_status = form_data.get('relationshipStatus', 'unknown')
@@ -229,15 +230,22 @@ def get_prevention_steps(form_data, prediction, severity, silly_title):
         university_description = university_name
         if university_ranking is not None:
             university_description = f"{university_name} (ranked #{university_ranking})"
+            
+        # Create a description of their education with major included
+        education_description = f"{education_level}"
+        if major != 'unknown':
+            education_description = f"{education_level} in {major}"
 
         prompt = f"""
         Give helpful, practical steps this person can take to avoid a midlife crisis titled "{silly_title}".
         They are {age} years old, with job satisfaction {display_satisfaction}, health: {health}, hobbies: {hobbies}. 
-        The education level they are at is {education_level} at {university_description} with gpa of {university_gpa}. 
+        They have {education_description} from {university_description} with a GPA of {university_gpa}. 
         They have a job level of {job_level}. The prediction score is {prediction} and the severity is {severity}. 
         They also have a relationship status of {relationship_status}.
-        Provide 1-2 bullet points on actions they can take right now. Make these serious, actionable recommendations.
+        Provide 1-2 bullet points on actions they can take right now. Make these serious, actionable recommendations very specific to who they are, consider the location of their university in fact.
         Format each point as a good sentence with specific advice. And at the end make a short bullet point kind of bullying them for being in this situation. Making sure the steps were good but the last part is jokey. Dont add any **
+        
+        Important: If their major is known, provide at least one recommendation that relates to their field of study or alternative careers within that field.
         """
         
         print(f"Sending OpenAI request for prevention steps with prompt: {prompt}")
