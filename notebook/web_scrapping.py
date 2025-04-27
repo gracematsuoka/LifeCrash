@@ -20,29 +20,6 @@ universities = []
 cities = []
 
 if table:
-    # Print first row to understand structure
-    first_row = table.find('tr')
-    if first_row:
-        print("Header row structure:")
-        header_cells = first_row.find_all(['th', 'td'])
-        for i, cell in enumerate(header_cells):
-            print(f"Header {i}: {cell.text.strip()}")
-    
-    # Print second row (ignoring headers)
-    data_row = table.find_all('tr')[1] if len(table.find_all('tr')) > 1 else None
-    if data_row:
-        print("\nFirst data row structure:")
-        data_cells = data_row.find_all('td')
-        for i, cell in enumerate(data_cells):
-            print(f"Cell {i}: {cell.text.strip()}")
-            # Check if there are any links in this cell
-            links = cell.find_all('a')
-            if links:
-                print(f"  - Contains {len(links)} link(s)")
-                for link in links:
-                    print(f"  - Link text: {link.text.strip()}")
-    
-    # Now try to extract all university data
     rows = table.find_all('tr')[1:]  # Skip header row
     for row in rows:
         cells = row.find_all('td')
@@ -61,8 +38,3 @@ if table:
             if city_cell:
                 cities.append(city_cell.text.strip('...').strip())
             
-
-# print(f"\nFound {len(universities)} universities")
-# if universities:
-#     print(f"First 5 universities: {universities[:5]}")
-#     print(f"First 5 cities: {cities[:5]}")
