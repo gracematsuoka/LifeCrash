@@ -1,6 +1,7 @@
 import pickle
 import pandas as pd
 import os
+import sys
 from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS
 import openai
@@ -11,14 +12,24 @@ load_dotenv()
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
+print(f"OpenAI API Key set: {'Yes' if openai.api_key and openai.api_key.startswith('sk-') else 'No'}")
 
 # Load your trained model
-with open('../frontend/random_forest_model.pkl', 'rb') as f:
-    model = pickle.load(f)
-    
-# Print feature names if available for debugging
-if hasattr(model, 'feature_names_in_'):
-    print("Model expects these features:", model.feature_names_in_)
+try:
+    with open('../frontend/random_forest_model.pkl', 'rb') as f:
+        model = pickle.load(f)
+        
+    # Print feature names if available for debugging
+    if hasattr(model, 'feature_names_in_'):
+        print("Model expects these features:", model.feature_names_in_)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    # Create a dummy model for testing if the real one can't be loaded
+    class DummyModel:
+        def predict(self, X):
+            return [3.5]  # Return a dummy prediction
+    model = DummyModel()
+    print("Using dummy model for testing")
 
 app = Flask(__name__)
 CORS(app)
@@ -27,21 +38,15 @@ CORS(app)
 def predict_api():
     try:
         print("Received request at /api/predict")
-
-        # Get JSON data from React
         data = request.json
         print(f"Incoming JSON data: {data}")
 
-        # Handle missing/empty values safely
         def safe_float(value, default=0.0):
             try:
                 return float(value)
             except (ValueError, TypeError):
                 return default
 
-        # Based on the notebook images, the model was trained with these exact features
-        # Image 3 shows Feature Importance with: University_GPA, Soft_Skills_Score, Networking_Score, 
-        # Career_Satisfaction, Work_Life_Balance
         user_data = pd.DataFrame([{
             'University_GPA': safe_float(data.get('universityGPA')),
             'Soft_Skills_Score': calculate_soft_skills(data),
@@ -51,32 +56,31 @@ def predict_api():
         }])
 
         print(f"Mapped user data for model: {user_data}")
-
-        # Make prediction
         prediction = model.predict(user_data)[0]
         print(f"Prediction from Random Forest: {prediction}")
 
-        # Calculate crisis age based on current age and prediction
         current_age = safe_float(data.get('age'), 30)
         crisis_age = calculate_crisis_age(current_age, prediction)
         print(f"Calculated crisis age: {crisis_age}")
 
-        # Determine severity and type based on prediction
         severity = calculate_severity(prediction)
         crisis_type = determine_crisis_type(prediction, user_data, data)
         print(f"Severity: {severity}, Crisis Type: {crisis_type}")
 
-        # Get AI analysis from OpenAI
-        ai_analysis = get_ai_analysis(data, prediction, severity, crisis_type)
-        print(f"AI Analysis: {ai_analysis}")
+        # Get silly crash title
+        crashout_title = get_silly_crash_title(crisis_type)
+        print(f"Silly Crashout Title: {crashout_title}")
 
-        # Prepare response
+        # Get serious prevention steps
+        prevention_steps = get_prevention_steps(data, prediction, severity, crisis_type)
+        print(f"Steps to Prevent: {prevention_steps}")
+
         response = {
             'prediction': float(prediction),
             'crisisAge': crisis_age,
             'severity': severity,
-            'type': crisis_type,
-            'aiAnalysis': ai_analysis
+            'type': crashout_title,
+            'stepsToPrevent': prevention_steps
         }
 
         print("Sending response:", response)
@@ -84,23 +88,138 @@ def predict_api():
 
     except Exception as e:
         print(f"Error in prediction API: {e}")
-        error_message = str(e)
+        return jsonify({'error': str(e)}), 400
+
+# --- Test endpoints for OpenAI functions ---
+
+@app.route('/api/test-silly-title', methods=['POST'])
+def test_silly_title():
+    try:
+        data = request.json
+        crisis_type = data.get('crisisType', 'Unknown crisis')
         
-        # Provide more helpful error message for common issues
-        if "Feature names" in error_message and "fit time" in error_message:
-            # Extract expected feature names from error
-            import re
-            seen_features = []
-            if "Feature names seen at fit time" in error_message:
-                seen_match = re.search(r"Feature names seen at fit time.*?:(.*?)(?:Feature names|$)", 
-                                    error_message, re.DOTALL)
-                if seen_match:
-                    seen_text = seen_match.group(1)
-                    seen_features = [f.strip() for f in re.findall(r'- ([^\n]+)', seen_text) if f.strip()]
-            
-            error_message = f"Model feature mismatch. Model expects these features: {', '.join(seen_features)}"
+        print(f"Testing silly title generation for crisis type: {crisis_type}")
         
-        return jsonify({'error': error_message}), 400
+        # Call the OpenAI function directly
+        silly_title = get_silly_crash_title(crisis_type)
+        
+        print(f"Generated silly title: {silly_title}")
+        return jsonify({'title': silly_title})
+    except Exception as e:
+        print(f"Error testing silly title API: {e}")
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/test-prevention', methods=['POST'])
+def test_prevention():
+    try:
+        data = request.json
+        print(f"Testing prevention steps with data: {data}")
+        
+        # Call the OpenAI function directly
+        prevention_steps = get_prevention_steps(
+            data,                     # Form data
+            3.5,                      # Prediction (mock value)
+            7,                        # Severity (mock value)
+            data.get('crisisType', 'Career change')  # Crisis type
+        )
+        
+        print(f"Generated prevention steps: {prevention_steps}")
+        return jsonify({'steps': prevention_steps})
+    except Exception as e:
+        print(f"Error testing prevention steps API: {e}")
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/check-openai-config', methods=['GET'])
+def check_openai_config():
+    try:
+        # Check if API key is set
+        api_key = os.getenv("OPENAI_API_KEY")
+        key_status = "Set" if api_key and api_key.startswith("sk-") else "Missing or Invalid"
+        
+        # Check if dotenv loaded correctly
+        dotenv_status = "Loaded" if os.getenv("OPENAI_API_KEY") is not None else "Not loaded"
+        
+        # Check for OpenAI module
+        openai_status = "Imported" if 'openai' in sys.modules else "Import Error"
+        
+        # Try a simple OpenAI API call to verify key works
+        api_working = "Unknown"
+        try:
+            if api_key and api_key.startswith("sk-"):
+                response = openai.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": "Hello"}],
+                    max_tokens=5
+                )
+                api_working = "Working" if response else "Failed"
+        except Exception as e:
+            api_working = f"Error: {str(e)}"
+        
+        # Return config status
+        config_data = {
+            'api_key_status': key_status,
+            'dotenv_status': dotenv_status,
+            'openai_module_status': openai_status,
+            'api_working': api_working,
+            'env_file_path': os.path.abspath('.env') if os.path.exists('.env') else "Not found"
+        }
+        print("OpenAI config check:", config_data)
+        return jsonify(config_data)
+    except Exception as e:
+        error_msg = f"Error checking OpenAI config: {str(e)}"
+        print(error_msg)
+        return jsonify({'error': error_msg}), 500
+
+# --- OpenAI integration functions ---
+
+def get_silly_crash_title(crisis_type):
+    try:
+        prompt = f"Give a silly but creative name for a midlife crisis involving: {crisis_type}. Keep it under 6 words, make it fun."
+        
+        print(f"Sending OpenAI request for silly title with prompt: {prompt}")
+        
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=30,
+            temperature=0.9
+        )
+        
+        title = response.choices[0].message.content.strip()
+        print(f"OpenAI returned silly title: {title}")
+        return title
+    except Exception as e:
+        print(f"Error getting silly crash title: {e}")
+        return f"Hilarious {crisis_type}"  # Fallback title if OpenAI fails
+
+def get_prevention_steps(form_data, prediction, severity, crisis_type):
+    try:
+        age = form_data.get('age', 'unknown')
+        job_satisfaction = form_data.get('jobSatisfaction', 'unknown')
+        health = form_data.get('health', 'unknown')
+        hobbies = form_data.get('hobbies', 'unknown')
+
+        prompt = f"""
+        Give helpful, practical steps this person can take to avoid a midlife crisis titled "{crisis_type}". 
+        They are {age} years old, with job satisfaction {job_satisfaction}/5, health: {health}, hobbies: {hobbies}. 
+        Provide 3-4 bullet points on actions they can take right now.
+        """
+        
+        print(f"Sending OpenAI request for prevention steps with prompt: {prompt}")
+
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=150,
+            temperature=0.7
+        )
+        
+        steps = response.choices[0].message.content.strip()
+        print(f"OpenAI returned prevention steps: {steps}")
+        return steps
+    except Exception as e:
+        print(f"Error getting prevention steps: {e}")
+        return "Unable to generate prevention advice at this time."
 
 # Helper functions for calculating missing features - based on your notebook
 def calculate_soft_skills(data):
@@ -135,61 +254,6 @@ def calculate_work_life_balance(data):
     # Simple formula
     score = (job_satisfaction * 0.5) + (hobby_factor * 0.5)
     return max(min(score, 5), 1)  # Keep between 1-5
-
-# OpenAI integration for enhanced analysis
-def get_ai_analysis(form_data, prediction, severity, crisis_type):
-    try:
-        age = form_data.get('age', 'unknown')
-        gender = form_data.get('gender', 'unknown')
-        education = form_data.get('education', 'unknown')
-        major = form_data.get('major', 'unknown')
-        job_satisfaction = form_data.get('jobSatisfaction', 'unknown')
-        health = form_data.get('health', 'unknown')
-        hobbies = form_data.get('hobbies', 'unknown')
-
-        prompt = f"""
-        As a life coach and career analyst, provide a personalized analysis of this person's midlife crisis prediction.
-
-        Individual's Profile:
-        - Age: {age}
-        - Gender: {gender}
-        - Education: {education}
-        - Field of Study: {major}
-        - Job Satisfaction (1-5): {job_satisfaction}
-        - Health/Exercise Habits: {health}
-        - Primary Hobby Type: {hobbies}
-
-        Model's Prediction:
-        - Crisis Risk Score: {prediction}/10
-        - Severity: {severity}/10
-        - Predicted Crisis Type: {crisis_type}
-        - Expected Age of Crisis: {calculate_crisis_age(float(age) if age != 'unknown' else 30, prediction)}
-
-        Based on this information, provide a 2-3 paragraph personalized analysis including:
-        1. Key factors contributing to their risk level
-        2. How their education and career choices impact their trajectory
-        3. Practical advice to mitigate their crisis risk
-        4. The most critical area they should focus on for prevention
-
-        Your analysis should be supportive, honest, and insightful.
-        """
-
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a compassionate life coach and career analyst specializing in midlife crisis prevention."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=400,
-            temperature=0.7
-        )
-
-        ai_analysis = response.choices[0].message.content.strip()
-        return ai_analysis
-
-    except Exception as e:
-        print(f"Error getting AI analysis: {e}")
-        return "Unable to generate AI analysis at this time."
 
 # Additional helper functions
 def safe_float(value, default=0.0):

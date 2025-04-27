@@ -21,6 +21,7 @@ export interface FormData {
     crisisAge: number;
     severity: number;
     type: string;
+    stepsToPrevent: string;
   }
 
   export interface Prediction {
