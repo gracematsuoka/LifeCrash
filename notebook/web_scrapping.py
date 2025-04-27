@@ -114,5 +114,89 @@ export const universityMap = {{
     
     print(f"Successfully created university options file with {len(university_options)} universities at {output_file}")
 
+def scrape_majors():
+    url = 'https://blog.collegevine.com/list-of-college-majors/'
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    try:
+        print("Fetching majors data...")
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            print(f"Failed to fetch data: HTTP {response.status_code}")
+            return []
+            
+        content = response.text
+        
+        soup = BeautifulSoup(content, 'html.parser')
+        
+        majors = []
+
+        lists = soup.find_all(['ol', 'ul'])[1:]  
+        for lst in lists:
+            items = lst.find_all('li')
+            if items and len(items) > 10:
+                for item in items:
+                    text = item.text.strip()
+                    if text:
+                        majors.append(text)
+
+        unique_majors = []
+        seen = set()
+        for major in majors:
+            if major not in seen:
+                seen.add(major)
+                unique_majors.append(major)
+        
+        print(f"Successfully scraped {len(unique_majors)} unique majors")
+        return unique_majors
+        
+    except Exception as e:
+        print(f"Error scraping majors: {e}")
+        return []
+
+def generate_majors_options_file():
+    majors_data = scrape_majors()
+    
+    if not majors_data:
+        print("No majors data to process. Using fallback data.")
+        majors_data = [
+            "Computer Science",
+            "Engineering",
+            "Business Administration",
+            "Psychology",
+            "Biology",
+            "Economics",
+            "English",
+            "Mathematics",
+            "Political Science",
+            "History"
+        ]
+    majors_data.sort()
+    
+    majors_options = []
+    
+    for i, major in enumerate(majors_data):
+        majors_options.append({
+            "value": major,
+            "label": major
+        })
+
+    js_content = f"""// Generated majors options for dropdown
+export const majorOptions = {json.dumps(majors_options, indent=2)};
+"""
+
+    output_dir = os.path.join('src', 'data')
+    os.makedirs(output_dir, exist_ok=True)
+    
+    output_file = os.path.join(output_dir, 'majorOptions.js')
+    with open(output_file, 'w') as file:
+        file.write(js_content)
+    
+    print(f"Successfully created majors options file with {len(majors_options)} majors at {output_file}")
+
 if __name__ == "__main__":
     generate_university_options_file()
+    generate_majors_options_file()
